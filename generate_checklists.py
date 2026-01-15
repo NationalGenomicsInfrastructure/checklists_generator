@@ -368,7 +368,7 @@ def generate_html_output(config: dict, cmd: str):
         _ = subprocess.run(cmd, shell=True, check=True, capture_output=True)
         logging.debug("HTML file generated successfully.")
     except subprocess.CalledProcessError as e:
-        logging.debug(f"Error generating HTML: {e}")
+        logging.warning(f"Error generating HTML: {e}")
         exit(1)
 
 
@@ -508,7 +508,7 @@ if __name__ == "__main__":
             generate_markdown_output(config, cmd, key)
 
         elif config["format"] == "html":
-            cmd += " --to html --embed-resources --standalone --debug"
+            cmd += " --to html --embed-resources --standalone --debug "
             cmd += (
                 f"--output {config['basename']}_{key}.html"
                 if config["basename"] != ""

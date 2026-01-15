@@ -3,7 +3,7 @@
 
 ### Final checks on Genomic Status before closing
 
-On GenStat, go to the _Links_ tab:
+On [GenStat](https://genomics-status.scilifelab.se/project/<project_id>), go to the _Links_ tab:
 
  - [ ] Check that the _Project Folder_ link is working
 
@@ -25,15 +25,15 @@ Click on the [bioinfo tab](<genstat_url>/bioinfo/<project_id>) and check the fol
 - [ ] The QC boxes are correctly set
 - [ ] The delivery dates are set
 
-On LIMS, select _Project_ from the dropdown menu and search for the project id (<project_id>). In the list that appears:
+On LIMS, click on the magnifying glass icon, select _Project_ from the dropdown menu and search for the project id (<project_id>). In the list that appears:
 
 - [ ] Check that all samples have ONLY the _Project Summary_ button
 
 ### Final step on Google Drive
 
-On GenStat, go to the _Links_ tab, and open the _Project Folder_ link.
+On [GenStat](https://genomics-status.scilifelab.se/project/<project_id>), go to the _Links_ tab, and open the _Project Folder_ link.
 
-- [ ] Go to *_Quality Assurance system* > Projects > Ongoing > projects > <project_id>
+- [ ] Go to *_Quality Assurance system* > Projects > Ongoing projects > `<username>_<year>_<index>`
 - [ ] Move the project folder to the folder *_Can be Archived*
 
 ### Final steps in LIMS
@@ -50,7 +50,7 @@ On the LIMS _Project summary_ page, check the following:
   - If not, set it to _Finished_, but leave the _Aborted_ as is, if any
 - [ ] The _Set App QC_ field is set to _N/A_, if no best practice analysis was performed
 
-- [ ] Upload the project report
+- [ ] Upload the project summary report
 
 Once all the checks are done:
 
@@ -70,3 +70,7 @@ Go to the _Project and Samples_ tab and search for the project name.
 On GenStat:
 
 - [ ] Write a running note that the project has been closed on LIMS
+
+```text
+Project closed in LIMS.
+```
