@@ -13,3 +13,5 @@ qmds/*
 # Local configuration file
 config.json
 /.quarto/
+
+**/*.quarto_ipynb

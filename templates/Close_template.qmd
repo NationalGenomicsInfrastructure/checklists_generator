@@ -11,7 +11,6 @@ In the _Project information_ tab, and check the following:
 
 - [ ] The _Lanes Ordered_ matches the _Lanes started_
 - [ ] The number of samples is correct in both _Samples_ and _Charon Status_ tables
-
 - [ ] There are no running notes that require the project to be kept open
 
 In the _User communication_ tab:
@@ -49,14 +48,12 @@ On the LIMS _Project summary_ page, check the following:
 - [ ] _Status (manual)/Set Status (manual)_ field is set to either _Finished_ or _Aborted_
   - If not, set it to _Finished_, but leave the _Aborted_ as is, if any
 - [ ] The _Set App QC_ field is set to _N/A_, if no best practice analysis was performed
-
 - [ ] Upload the project summary report
 
 Once all the checks are done:
 
 - [ ] Click on _Record changes | Run_
 - [ ] Click on _Next Steps_
-
 - [ ] Apply the _Mark protocol as complete_ for all samples
 - [ ] Click on _Finish Step_
 
@@ -72,5 +69,5 @@ On GenStat:
 - [ ] Write a running note that the project has been closed on LIMS
 
 ```text
-Project closed in LIMS.
+Project closed in LIMS. <author_signature>
 ```

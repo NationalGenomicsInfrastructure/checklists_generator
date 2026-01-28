@@ -25,7 +25,14 @@ If any of the above points are not correct, you can edit the markdown file direc
 make_report [Project_name]_project_summary.md
 ```
 
-- [ ] Transfer the multiqc report and the `reports` directory to the local machine for later use.
+- [ ] Transfer the multiqc report and the `reports` directory to the local machine for later use. From your local machine, you can run a command similar to this:
+
+```bash
+cd <local_reports_path>
+mkdir [Project_name]
+cd [Project_name]
+rsync -avP --exclude="*_multiqc_report_data" --exclude="qc_ngi" miarka1:<ngi_path>/ANALYSIS/<project_id>/ .
+```
 
 ### Standard DDS delivery
 
@@ -60,7 +67,7 @@ taca -c <config_path>/sthlm_taca_fastq_delivery.yml deliver --cluster dds projec
 - [ ] Write a running note that the delivery has been started
 
 ```text
-Started the delivery to DDS of project <DDS_project_id>.
+Started the delivery to DDS of project `DDS_project_id`. <author_signature>
 ```
 
 - [ ] Check on [Charon](<charon_url>/project/<project_id>) that the _Status_ column changed from _STALE_ to *IN_PROGRESS*
@@ -76,7 +83,6 @@ taca -c <config_path>/sthlm_taca_fastq_delivery.yml deliver --cluster dds releas
 ### Notifying the user
 
 - [ ] Log into Zendesk
-
 - [ ] Create a new ticket
 - [ ] Add the contact person as a _Requester_
 - [ ] In CC, add the following people:
@@ -103,20 +109,20 @@ Open the LIMS _Project summary_ page:
 - Click on any of the samples in the _Sample_ column (the first time to open the LIMS login page, and the second time to open the samples view)
 - Click on the _Project Summary_ button
 
-- [ ] Enter the delivery date in _All raw data delivered_ field
-- [ ] Sign the field _all samples sequenced_
-- [ ] Sign the delivery by writing your signature in the _Signature all raw data delivered_ field
+Set the following fields:
+
+- [ ] Enter the delivery date in _All raw data delivered_
+- [ ] Put your signature in the _Signature All raw data delivered_
 - [ ] Click on _Record Changes | Run_
 
 On GenStat, open the [bioinfo tab](<genstat_url>/bioinfo/<project_id>):
 
 - [ ] Enter the delivery date in the _Data delivered_ field
 - [ ] Click on _Save_
-
 - [ ] Write a running note that the delivery has been completed
 
 ```text
-All data delivered to the DDS project <DDS_project_id> and user informed by email.
+All data delivered to the DDS project `DDS_project_id` and user informed by email. <author_signature>
 ```
 
 ---
