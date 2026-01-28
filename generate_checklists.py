@@ -51,6 +51,12 @@ def parse_args():
         default=None,
     )
     parser.add_argument(
+        "--signature",
+        type=str,
+        help="Author signature.",
+        default=None,
+    )
+    parser.add_argument(
         "--email",
         type=str,
         help="Author email.",
@@ -90,6 +96,12 @@ def parse_args():
         "--output-path",
         type=pathlib.Path,
         help="Path to the output directory.",
+        default=None,
+    )
+    parser.add_argument(
+        "--local-reports-path",
+        type=pathlib.Path,
+        help="Path to where MultiQC and reports folder should be saved locally.",
         default=None,
     )
     parser.add_argument(
@@ -282,8 +294,17 @@ def parse_markdown_templates(config: dict) -> dict:
             line = re.sub(r"<flowcell_id>", f"{config['flowcell']}", line)
         if config["author"]:
             line = re.sub(r"<author_name>", f"{config['author']}", line)
+        if config["signature"] and config["signature"] != "":
+            line = re.sub(r"<author_signature>", f"/{config['signature']}", line)
+            line = re.sub(r"<user_signature>", f"{config['signature']}", line)
+        else:
+            line = re.sub(r"<author_signature>|<user_signature>", "", line)
         if config["ngi_path"]:
             line = re.sub(r"<ngi_path>", f"{config['ngi_path']}", line)
+        if config["local_reports_path"]:
+            line = re.sub(
+                r"<local_reports_path>", f"{config['local_reports_path']}", line
+            )
         if config["genstat_url"]:
             line = re.sub(r"<genstat_url>", f"{config['genstat_url']}", line)
         if config["charon_url"]:
@@ -476,10 +497,12 @@ if __name__ == "__main__":
     logging.debug(f"    Flowcell ID: {config['flowcell']}")
     logging.debug(f"    NGI Path: {config['ngi_path']}")
     logging.debug(f"    Author: {config['author']}")
+    logging.debug(f"    Author Signature: {config['signature']}")
     logging.debug(f"    Author Email: {config['email']}")
     logging.debug(f"    Output Directory: {config['output_path']}")
     logging.debug(f"    Output Format: {config['format']}")
     logging.debug(f"    Output Structure: {config['output_structure']}")
+    logging.debug(f"    Local Reports Directory: {config['local_reports_path']}")
     logging.debug(f"    Timestamp: {args.timestamp}")
     if config["format"] == "markdown":
         logging.debug(f"    Markdown Output Path: {config['output_path']}")

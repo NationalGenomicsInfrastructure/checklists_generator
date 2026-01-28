@@ -13,7 +13,7 @@ If you provided the project id when generating this checklist, you can access it
 
 Click on the [bioinfo tab](<genstat_url>/bioinfo/<project_id>) and the [flowcell page](<genstat_url>/flowcells/<flowcell_id>)
 
-On the flowcell, check the following:
+On the flowcell page, check the following:
 
 - [ ] Total clusters and clusters per lane (see @tbl-yields)
 - [ ] PhiX error rate -> It should be below 2% (unless more than 1% PhiX was added)
@@ -83,13 +83,14 @@ On the LIMS page:
 This action should be performed only if no more samples are expected to be sequenced
 :::
 
-- [ ] Set _All samples as sequenced_ by writing your signature
-- [ ] Check other fields for correctness
+- [ ] Enter the sequencing date in _All samples sequenced_
+- [ ] Put your signature in the _Signature All samples sequenced_
+- [ ] Check other fields for correctness (e.g. _Document Version_)
 - [ ] Click on _Reads Aggregation | Run_
 
 In the table at the bottom of the page, the _QC_ column refers to whether the sample has to be delivered or not.
 
-- [ ] Set the value of the _QC_ column accordingly
+- [ ] Set the value of the _QC_ column accordingly (i.e. whether the sample has to be delivered of not)
 - [ ] Set the value of the _Set App QC_ column to _N/A_ (unless they are RNA-seq samples)
 - [ ] Click on _Record Changes | Run_
 
@@ -118,10 +119,10 @@ On Miarka:
 ngi_pipeline_start.py qc project <ngi_path>/DATA/<project_id>
 ```
 
-- [ ] Write a running note that the fastqc and fast screen are done/started
+- [ ] Write a running note saying that the fastqc and fast screen jobs have been started
 
 ```text
-Data organized and QC started for <project_id> samples on <flowcell_id>.
+Data organized and QC started for <project_id> samples on <flowcell_id>. <author_signature>
 ```
 
 - [ ] Sign the note and add the required tags
@@ -157,7 +158,7 @@ Open the [bioinfo tab](<genstat_url>/bioinfo/<project_id>):
 - [ ] Fill all the fields according to the results of the MultiQC report
 
 ::: {.callout-tip title="Write a running note [OPTIONAL]"}
-- [ ] Write a running note if there are things to bring up from the report: `MultiQC report has been generated for <project_id>.`
+- [ ] Write a running note if there are things to bring up from the report: `MultiQC report has been generated for <project_id>. <author_signature>`
 - [ ] Sign the note and add the required tags
 :::
 
