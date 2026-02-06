@@ -85,7 +85,7 @@ This action should be performed only if no more samples are expected to be seque
 
 - [ ] Enter the sequencing date in _All samples sequenced_
 - [ ] Put your signature in the _Signature All samples sequenced_
-- [ ] Check other fields for correctness (e.g. _Document Version_)
+- [ ] Check other fields for correctness
 - [ ] Click on _Reads Aggregation | Run_
 
 In the table at the bottom of the page, the _QC_ column refers to whether the sample has to be delivered or not.

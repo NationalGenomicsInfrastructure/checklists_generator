@@ -1,0 +1,391 @@
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    // Function to handle download
+    function downloadFunction() {
+        hideButtons();
+        const element = document.getElementById('body');
+        const formattedDate = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+        const options = {
+            margin: 10,
+            filename: 'FileName_' + formattedDate + '.pdf',
+            image: { type: 'jpeg', quality: 1.0 },
+            html2canvas: { scale: 4 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf(element, options);
+        showButtons();
+    }
+</script>
+
+<script>
+
+  function addAnswerWithButton(answerClass, buttonText, answerText) {
+
+    const divElement = document.querySelector(`.${answerClass}`);
+    const randomId = "answer-" + Math.floor(Math.random() * 1000000);
+
+    // Create the new button element
+    const buttonElement = document.createElement("button");
+    buttonElement.className = "show-answer";
+    buttonElement.textContent = buttonText;
+    buttonElement.onclick = function() {
+      showAnswer(randomId);
+    };
+
+    // Create the new answer element
+    const answerElement = document.createElement("p");
+    answerElement.id = randomId;
+    answerElement.style.display = "none";
+    answerElement.innerHTML = answerText;
+
+    // Replace the div element with the new button and answer elements
+    divElement.parentNode.replaceChild(buttonElement, divElement);
+    buttonElement.insertAdjacentElement("afterend", answerElement);
+  }
+
+  function showAnswer(answerId) {
+    var answer = document.getElementById(answerId);
+    if (answer.style.display === "none") {
+      answer.style.display = "block";
+    } else {
+      answer.style.display = "none";
+    }
+  }
+
+  function addAnswerButton() {
+    var answers = document.querySelectorAll(".answer")
+    answers.forEach(e => {
+      addAnswerWithButton("answer", " Show Answer", e.innerHTML);
+    });
+  }
+
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    addAnswerButton();
+  });
+</script>
+</html>
+
+
+### Non-Accredited Bioinformatic Analysis: Visium Data Analysis
+
+This procedure assumes that the user has access to _Miarka_ and the _ngi-lab-ns_ storage, and that _Space Ranger_ and _Loupe Browser_ are installed and accessible.
+
+### Run spaceranger count
+
+- [ ] Check the slide serial number to determine the capture area size (see @tbl-assays)
+
+::: {.callout-note appearance="minimal" collapse="true" title="Spatial Gene Expression for FF tissue samples (Visium V1, Ploy-A based)" }
+
+**Automatic alignment**
+
+```bash
+spaceranger count
+    --id <project_id>_101 \
+    --transcriptome <transcriptome_path> \
+    --fastqs <ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id> \
+    --sample <project_id>_101 \
+    --image /Path/to/A1_microscope_image.jpg \
+    --slide <slide_id> \
+    --area A1 \
+    --slidefile /Path/to/<slide_id>.gpr \
+    --create-bam true
+```
+
+**Manual alignment**
+
+In case the automatic fiducial alignment failed with Space Ranger (see example below), or when fiducial markers are obstructed or tissue boundaries are unclear, manual fiducial alignment and tissue detection become necessary. The [Loupe Browser](https://www.10xgenomics.com/support/software/loupe-browser/latest) provides a Visium Manual Alignment wizard to generate an alignment JSON file for use in the Space Ranger pipeline. For detailed instructions, refer to [Manual Fiducial Alignment and Tissue Detection](https://www.10xgenomics.com/support/software/space-ranger/latest/analysis/inputs/image-fiducial-alignment).
+
+
+![Fiducial frame does not align properly with fiducial spots](<assets_path>/visium_fiducial_alignment.png)
+
+```bash
+spaceranger count
+    --id <project_id>_101 \
+    --transcriptome <transcriptome_path> \
+    --fastqs <ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id> \
+    --sample <project_id>_101 \
+    --image /Path/to/A1_microscope_image.jpg \
+    --slide <slide_id> \
+    --area A1 \
+    --slidefile /Path/to/<slide_id>.gpr \
+    --loupe-alignment <project_id>_101_<slide_id>_A1.json \
+    --create-bam true
+```
+
+:::
+
+
+::: {.callout-note appearance="minimal" collapse="true" title="Spatial Gene Expression for FFPE tissue samples (Visium V1, Probe based)" }
+
+**Automatic alignment**
+
+```bash
+spaceranger count
+    --id <project_id>_101 \
+    --transcriptome <transcriptome_path> \
+    --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v1.0_GRCh38-2020-A.csv \
+    --fastqs <ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id> \
+    --sample <project_id>_101 \
+    --image /path/to/A1_microscope_image.jpg \
+    --slide <slide_id> \
+    --area A1 \
+    --slidefile /Path/to/<slide_id>.gpr \
+    --create-bam true
+```
+
+**Manual alignment**
+
+In case the automatic fiducial alignment failed with Space Ranger (see example below), or when fiducial markers are obstructed or tissue boundaries are unclear, manual fiducial alignment and tissue detection become necessary. The [Loupe Browser](https://www.10xgenomics.com/support/software/loupe-browser/latest) provides a Visium Manual Alignment wizard to generate an alignment JSON file for use in the Space Ranger pipeline. For detailed instructions, refer to [Manual Fiducial Alignment and Tissue Detection](https://www.10xgenomics.com/support/software/space-ranger/latest/analysis/inputs/image-fiducial-alignment).
+
+![Fiducial frame does not align properly with fiducial spots](<assets_path>/visium_fiducial_alignment.png)
+
+```bash
+spaceranger count
+    --id <project_id>_101 \
+    --transcriptome <transcriptome_path> \
+    --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v1.0_GRCh38-2020-A.csv \
+    --fastqs <ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id> \
+    --sample <project_id>_101 \
+    --image /path/to/A1_microscope_image.jpg \
+    --slide <slide_id> \
+    --area A1 \
+    --slidefile /Path/to/<slide_id>.gpr \
+    --loupe-alignment <project_id>_101_<slide_id>_A1.json \
+    --create-bam true
+```
+
+:::
+
+
+::: {.callout-note appearance="minimal" collapse="true" title="CytAssist Spatial Gene Expression for FF or FFPE tissue samples (Visium V2, CytAssist enabled)" }
+
+**Automatic alignment (CytAssist + Microscope Image)**
+
+```bash
+spaceranger count
+    --id <project_id>_101 \
+    --transcriptome <transcriptome_path> \
+    --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv \
+    --fastqs <ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id> \
+    --sample <project_id>_101 \
+    --cytaimage /path/to/A1_<project_id>_101.tif \
+    --image /path/to/A1_microscope_image.jpg \
+    --slide <slide_id> \
+    --area A1 \
+    --slidefile /path/to/<slide_id>.gpr \
+    --create-bam true
+```
+
+**Manual alignment (CytAssist + Microscope Image)**
+
+If the automatic alignment of CytAssist image to the microscope image is poor (see example below), manual image registration will be required. The [Loupe Browser](https://www.10xgenomics.com/support/software/loupe-browser/latest) provides the CytAssist Image Alignment wizard for manual image registration. This wizard provides an option to export a standalone alignment JSON file with image registration results or to continue with the [Manual Fiducial Alignment and Tissue Detection](Manual Fiducial Alignment and Tissue Detection) workflow to generate a combined alignment file. For detailed instructions, refer to Manual CytAssist Image - Microscope Image Alignment.
+
+![](<assets_path>/visium_fiducial_tissue_alignment.png)
+
+```bash
+spaceranger count
+    --id <project_id>_101 \
+    --transcriptome <transcriptome_path> \
+    --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv \
+    --fastqs <ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id> \
+    --sample <project_id>_101 \
+    --cytaimage /path/to/A1_<project_id>_101.tif \
+    --image /path/to/A1_microscope_image.jpg \
+    --slide <slide_id> \
+    --area A1 \
+    --slidefile /Path/to/<slide_id>.gpr \
+    --loupe-alignment <project_id>_101_<slide_id>_A1.json \
+    --create-bam true
+```
+
+:::
+
+
+::: {.callout-note appearance="minimal" collapse="true" title="CytAssist Spatial Gene and Protein Expression for FFPE tissue samples (Visium V2, CytAssist enabled)" }
+
+A CSV file is required to specify FASTQ files for the GEX and PEX libraries using the --libraries option instead of --fastqs. See [Libraries CSV](https://www.10xgenomics.com/support/software/space-ranger/latest/analysis/running-pipelines/count-cytassist-pex#libraries-csv) for details on how to set up this file.
+
+The following is an example of a libraries CSV file (<project_id>_101_library.csv) that includes sequencing data from two libraries, which were sequenced and demultiplexed as two separate samples: <project_id>_101 (GEX) and <project_id>_501 (PEX).
+
+```bash
+$ cat <project_id>_101_library.csv
+fastqs,sample,library_type
+<ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id>,<project_id>_101,Gene Expression
+<ngi_path>/DATA/<project_id>/<project_id>_501/A/<flowcell_id>,<project_id>_501,Antibody Capture
+```
+
+
+**Automatic alignment (CytAssist + Microscope Image)**
+
+```bash
+spaceranger count
+    --id <project_id>_101 \
+    --transcriptome<transcriptome_path> \
+    --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv \
+    --feature-ref <visium_base_path>/feature_refs/Visium_Human_Immune_Cell_Profiling_Panel_v1.0.csv \
+    --libraries /path/to/<project_id>_101_library.csv \
+    --cytaimage /path/to/A_<project_id>_101.tif \
+    --image /path/to/A_microscope_image.jpg \
+    --slide <slide_id> \
+    --area A \
+    --slidefile /path/to/<slide_id>.gpr \
+    --create-bam true
+```
+
+**Manual alignment (CytAssist + Microscope Image)**
+
+If the automatic alignment of CytAssist image to the microscope image is poor (see example below), manual image registration will be required. The [Loupe Browser](https://www.10xgenomics.com/support/software/loupe-browser/latest) provides the CytAssist Image Alignment wizard for manual image registration. This wizard provides an option to export a standalone alignment JSON file with image registration results or to continue with the [Manual Fiducial Alignment and Tissue Detection](Manual Fiducial Alignment and Tissue Detection) workflow to generate a combined alignment file. For detailed instructions, refer to Manual CytAssist Image - Microscope Image Alignment.
+
+![](<assets_path>/visium_fiducial_tissue_alignment.png)
+
+```bash
+spaceranger count
+    --id <project_id>_101 \
+    --transcriptome<transcriptome_path> \
+    --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv \
+    --feature-ref <visium_base_path>/feature_refs/Visium_Human_Immune_Cell_Profiling_Panel_v1.0.csv \
+    --libraries /path/to/<project_id>_101_library.csv \
+    --cytaimage /path/to/A_<project_id>_101.tif \
+    --image /path/to/A_microscope_image.jpg \
+    --slide <slide_id> \
+    --area A \
+    --slidefile /path/to/<slide_id>.gpr \
+    --loupe-alignment <project_id>_101_<slide_id>_A.json \
+    --create-bam true
+```
+
+:::
+
+
+::: {.callout-note appearance="minimal" collapse="true" title="HD Spatial Gene Expression (Visium HD, CytAssist enabled)" }
+
+**Automatic alignment**
+
+```bash
+spaceranger count
+    --id <project_id>_101 \
+    --transcriptome<transcriptome_path> \
+    --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv \
+    --fastqs <ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id> \
+    --sample <project_id>_101 \
+    --cytaimage /path/to/A1_<project_id>_101.tif \
+    --image /path/to/A1_microscope_image.jpg \
+    --slide <slide_id> \
+    --area A1 \
+    --slidefile /path/to/<slide_id>.vlf \
+    --create-bam true
+```
+
+**Manual alignment**
+
+If any of following steps in Space Ranger's automatic analysis fails or produces unsatisfactory results  (see @tbl-metrics-hd), manual alignment and tissue detection are necessary:
+
+- Determine the position of fiducial markers
+- Identify tissue boundaries
+- Align the microscope image to spatial expression data and to the CytAssist image
+
+Visium HD Manual Alignment tool requires [Loupe Browser v8.0 or later](https://www.10xgenomics.com/support/software/loupe-browser/latest), which can be downloaded [here](https://www.10xgenomics.com/support/software/loupe-browser/downloads). For detailed instructions, refer to [Visium HD Manual Alignment](https://www.10xgenomics.com/support/software/space-ranger/latest/analysis/inputs/visium-hd-loupe-alignment).
+
+```bash
+spaceranger count
+    --id <project_id>_101 \
+    --transcriptome<transcriptome_path> \
+    --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv \
+    --fastqs <ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id> \
+    --sample <project_id>_101 \
+    --cytaimage /path/to/A1_<project_id>_101.tif \
+    --image /path/to/A1_microscope_image.jpg \
+    --slide <slide_id> \
+    --area A1 \
+    --slidefile /Path/to/<slide_id>.vlf \
+    --loupe-alignment <project_id>_101_<slide_id>_A1.json \
+    --create-bam true
+```
+
+:::
+
+
+---
+
+### Space Ranger's outputs
+
+The `spaceranger count` pipeline creates a directory named after the `--id` argument, with the output files located within the _outs_ subfolder.
+
+For detailed explanations of `spaceranger count` outputs, refer to following links:
+
+- [Visium v1/v2 Spatial Gene Expression](https://www.10xgenomics.com/support/software/space-ranger/latest/analysis/outputs/output-overview#count-visium-v1-v2)
+- [Visium HD Spatial Gene Expression](https://www.10xgenomics.com/support/software/space-ranger/latest/analysis/outputs/output-overview#hd-outputs)
+
+**QC metrics**
+
+The spaceranger count pipeline generates a metrics_summary.csv file that includes several key metrics related to the barcoding and sequencing. The following are definitions for these metrics:
+
+- [Metrics definitions for spaceranger count (FF)](https://www.10xgenomics.com/support/software/space-ranger/latest/analysis/outputs/space-ranger-metrics-summary#metrics-definitions-for-spaceranger-count-ff-18b584)
+- [Metrics definitions for spaceranger count (FFPE)](https://www.10xgenomics.com/support/software/space-ranger/latest/analysis/outputs/space-ranger-metrics-summary#metrics-definitions-for-spaceranger-count-ffpe-0b8a39)
+- [Protein Expression metrics](https://www.10xgenomics.com/support/software/space-ranger/latest/analysis/outputs/space-ranger-metrics-summary#protein-expression-metrics-79f4aa)
+
+Additionally, the `spaceranger count` pipeline outputs an interactive report, _web_summary.html_, which contains experimental metrics (_e.g._ QC metrics) and automated secondary analysis results.
+
+Prior the data delivery, review the report (web_summary.html) to ensure samples meet the following criteria:
+
+| Tab | Metric | FF | FFPE | CytAssist Enabled |
+| :---: | :---: | :---: | :---: | :---: |
+| Summary | Mean Reads per Spot | >50'000 | >25'000 | >25'000 |
+| Summary | Median Gene per Spot | >1'000 | >1'000 | >1'000 |
+| Summary | Sequencing: <br>Valid barcodes and UMI | >95% | >75% | >95% |
+| Summary | Mapping: <br>Reads Mapped to Genome/Probe Set | >95% | >95% | >95% |
+| Gene Expression | UMIs Detected | UMIs correctly overlaid on the tissue image | UMIs correctly overlaid on the tissue image | UMIs correctly overlaid on the tissue image |
+
+: **Visium V1/V2** {#tbl-metrics-v1-v2 .striped .hover}
+
+| Metric | Threshold |
+| :---: | :---: |
+| Sequencing saturation | >50% |
+| Mean reads per 8 µm bin* | >391.6 |
+| Reads Mapped to Probe Set | >95% |
+| Valid UMIs | >95% |
+
+: **Visium HD** {#tbl-metrics-hd .striped .hover}
+
+\* The recommended minimum sequencing depth is 275 million read pairs per fully-covered Capture Area. For a 6.5 mm Visium HD capture area, the total number of 8 µm bins is 702,244, the minimum reads per 8 µm bin can be calculated as follows: _Minimum reads per 8 µm bin = 275000000/702244 = 391.6_.
+
+
+If any of these metrics do not meet the specified criteria, document a Running Note in the project page on Genomics-status (GenStat)  and tag the prep responsible and Team Leader for further discussion and decision.
+
+---
+
+## Appendix
+
+### Probe sets compatibility
+
+| Probe set | Compatible Assay |
+| :---: | :---: |
+| [Human Probe Set v2](https://www.10xgenomics.com/support/cytassist-spatial-gene-expression/documentation/steps/probe-sets/visium-human-transcriptome-probe-set-v2-0) | Visium HD Spatial Gene Expression <br>Visium CytAssist Spatial Gene and Protein Expression <br>Visium CytAssist Spatial Gene Expression (FFPE, Fresh Frozen) |
+| [Human Probe Set v1](https://www.10xgenomics.com/support/cytassist-spatial-gene-expression/documentation/steps/probe-sets/visium-human-transcriptome-probe-set-v1-0) | Visium Spatial Gene Expression for FFPE |
+| [Mouse Probe Set v2](https://www.10xgenomics.com/support/cytassist-spatial-gene-expression/documentation/steps/probe-sets/visium-mouse-transcriptome-probe-set-v2-0) | Visium HD Spatial Gene Expression |
+| [Mouse Probe Set v1](https://www.10xgenomics.com/support/cytassist-spatial-gene-expression/documentation/steps/probe-sets/visium-mouse-transcriptome-probe-set-v1-0) | Visium CytAssist Spatial Gene Expression (FFPE, Fresh Frozen, Fixed Frozen) <br>Visium Spatial Gene Expression for FFPE |
+
+: Relevant probe set is required to run the `spaceranger count` pipeline. Probe sets come bundled with the Space Ranger package and are also available for download from [Download Center - Probe Sets](https://www.10xgenomics.com/support/software/space-ranger/downloads#reference-downloads) for convenience. {#tbl-compatibility .striped .hover}
+
+### Visium Assays
+
+| Platform | Slide | Tissue | Assay | Methods | Software |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| Visium V1 | 6.5mm <br>SN: V1xxxxx-xxx <br>Capture area: A1,B1,C1,D1 | FF <br>FFPE | Poly-A- and Probe-based | Spatial Gene Expression for FF and FFPE | |
+| Visium V2 | 6.5mm <br>SN: V4xxxxx-xxx <br>Capture area: A1,D1 <br><br>11mm; SN: V5xxxxx-xxx; Capture area: A, B | FF | Probe-based CytAssist enabled | CytAssist Spatial Gene Expression | SpaceRanger version >=2.1 |
+| Visium V2 | 6.5mm <br>SN: V4xxxxx-xxx <br>Capture area: A1,D1 <br><br>11mm <br>SN: V5xxxxx-xxx <br>Capture area: A, B | FFPE | Probe-based CytAssist enabled | CytAssist Spatial Gene Expression <br>CytAssist Spatial Gene and Protein Expression | SpaceRanger version >=2.1 |
+| Visium HD | 6.5mm <br>SN: H1xxxxx-xxx <br>Capture area: A1,D1 | FFPE | Probe-based CytAssist enabled | HD Spatial Gene Expression | SpaceRanger version >=3.0 |
+
+: Types of Visium slides is compatible with `spaceranger count` pipeline. {#tbl-assays .striped .hover}
+
+---
+
+### External References
+
+- [Spatial Gene Expression for Fresh Frozen](https://www.10xgenomics.com/support/spatial-gene-expression-fresh-frozen)
+- [Spatial Gene Expression for FFPE](https://www.10xgenomics.com/support/spatial-gene-expression-ffpe)
+- [CytAssist Spatial Gene Expression](https://www.10xgenomics.com/support/cytassist-spatial-gene-expression)
+- [CytAssist Spatial Gene and Protein Expression](https://www.10xgenomics.com/support/spatial-gene-and-protein-expression)
+- [HD Spatial Gene Expression](https://www.10xgenomics.com/support/spatial-gene-expression-hd)
+- [TechNote: Interpreting Space Ranger Web Summary Files for Visium Spatial Gene Expression for FFPE Assay](https://assets.ctfassets.net/an68im79xiti/7tUastW9CfQAxWRflJlo3w/13f2833d5f9d33e95b706635e7aa2222/CG000499_TechNote_InterpretingspaceRangerWebSummaryFiles_VisiumFFPE_RevA.pdf)

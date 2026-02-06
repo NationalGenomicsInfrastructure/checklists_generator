@@ -32,7 +32,7 @@ On LIMS, click on the magnifying glass icon, select _Project_ from the dropdown 
 
 On [GenStat](https://genomics-status.scilifelab.se/project/<project_id>), go to the _Links_ tab, and open the _Project Folder_ link.
 
-- [ ] Go to *_Quality Assurance system* > Projects > Ongoing projects > `<username>_<year>_<index>`
+- [ ] Go to *_Quality Assurance system* > Projects > Ongoing projects > `<project_name>`
 - [ ] Move the project folder to the folder *_Can be Archived*
 
 ### Final steps in LIMS
@@ -59,7 +59,7 @@ Once all the checks are done:
 
 ### Closing the project on LIMS
 
-Go to the _Project and Samples_ tab and search for the project name.
+Go to the _Project and Samples_ tab and search for <project name>.
 
 - [ ] Set the project status to _Closed_
 - [ ] Click on _Save_

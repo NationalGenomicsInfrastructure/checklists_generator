@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import argparse
 import json
 import logging
@@ -33,15 +34,39 @@ def parse_args():
         choices=["markdown", "html"],
     )
     parser.add_argument(
-        "--project",
+        "--name",
         type=str,
         help="Project name.",
+        default=None,
+    )
+    parser.add_argument(
+        "--project",
+        type=str,
+        help="Project identifier.",
         default=None,
     )
     parser.add_argument(
         "--flowcell",
         type=str,
         help="Flowcell identifier.",
+        default=None,
+    )
+    parser.add_argument(
+        "--slide",
+        type=str,
+        help="Slide identifier.",
+        default=None,
+    )
+    parser.add_argument(
+        "--genome-path",
+        type=pathlib.Path,
+        help="Genome path.",
+        default=None,
+    )
+    parser.add_argument(
+        "--transcriptome-path",
+        type=pathlib.Path,
+        help="Transcriptome path.",
         default=None,
     )
     parser.add_argument(
@@ -63,9 +88,29 @@ def parse_args():
         default=None,
     )
     parser.add_argument(
+        "--instrument",
+        type=str,
+        help="Instrument type.",
+        default="illumina",
+        choices=["illumina", "aviti"],
+    )
+    parser.add_argument(
+        "--best-practice",
+        type=str,
+        help="Author signature.",
+        default=None,
+        choices=["visium"],
+    )
+    parser.add_argument(
         "--ngi-path",
         type=pathlib.Path,
         help="Path to the NGI folder.",
+        default=None,
+    )
+    parser.add_argument(
+        "--visium-base-path",
+        type=pathlib.Path,
+        help="Path to the Visium Base path directory.",
         default=None,
     )
     parser.add_argument(
@@ -116,6 +161,12 @@ def parse_args():
         help="Output structure for the checklist.",
         default=None,
         choices=["flat", "nested"],
+    )
+    parser.add_argument(
+        "--script-assets-path",
+        type=pathlib.Path,
+        help="Path to the assets required by this script.",
+        default=None,
     )
     parser.add_argument(
         "--force",
@@ -169,18 +220,29 @@ def set_run_parameters(args):
     return config
 
 
-def validate_project_id(project_id: str):
+def validate_project_id(project_id: str) -> None:
     """Validate the project ID format."""
-    if not re.match(r"^P[0-9]{5}$", project_id):
+    if not re.match(r"^P[0-9]{4,5}$", project_id):
         raise ValueError(
-            "Project ID must start with 'P' followed by 4 or 5 digits (e.g., P1234 or P12345)."
+            "Project ID must start with 'P' followed by 4 to 5 digits (e.g., P1234 or P12345)."
         )
 
 
-def validate_flowcell_id(flowcell_id: str):
+def validate_project_name(project_name: str) -> None:
+    """Validate the project name format."""
+    if not re.match(r"^[A-Z].[A-Za-z]+_[0-9]{2}_[0-9]{2}$", project_name):
+        raise ValueError(
+            "Project Name is not in the expected format. Please check the input or drop the option."
+        )
+
+
+def validate_flowcell_id(flowcell_id: str) -> None:
     """Validate the flowcell ID format."""
     if not re.match(
         r"^[0-9]{6,8}_[A-Z]{1,2}[0-9]{5}_[0-9]{3,4}_[A-Z0-9]{9,10}(-[A-Z0-9]{5})?$",
+        flowcell_id,
+    ) and not re.match(
+        r"^[0-9]{8}_[A-Z]{2}[0-9]{6}_[A-Z][0-9]{10}$",  # AVITI flowcell format
         flowcell_id,
     ):
         raise ValueError(
@@ -208,7 +270,7 @@ def validate_quarto_path(quarto_path: pathlib.Path):
     return pathlib.Path(quarto_path), quarto_version
 
 
-def validate_templates(template_path: pathlib.Path):
+def validate_templates(template_path: pathlib.Path, extra_templates: list = []):
     """Validate the template path."""
     if not template_path.is_dir():
         logging.error("The specified template path does not exist.")
@@ -217,7 +279,7 @@ def validate_templates(template_path: pathlib.Path):
         "QC_template.qmd",
         "Delivery_template.qmd",
         "Close_template.qmd",
-    ]
+    ] + extra_templates
     missing_templates = [
         template
         for template in required_templates
@@ -242,6 +304,9 @@ def prepare_markdown_header(config: dict, template: str):
     elif template == "close":
         title = "Close"
         subtitle = "Bioinformatic Sample Close"
+    elif template == "visium":
+        title = "Visium Data Analysis"
+        subtitle = "Non-Accredited Bioinformatic Analysis"
     else:
         logging.error(f"Unknown template '{template}'. Cannot prepare markdown header.")
         exit(1)
@@ -269,6 +334,7 @@ def prepare_markdown_header(config: dict, template: str):
             "  html:",
             "    page-layout: full",
             "    anchor-sections: true",
+            "    collapse: true",
             "    tbl-cap-location: bottom",
             "    theme:",
             "      light: flatly",
@@ -290,8 +356,18 @@ def parse_markdown_templates(config: dict) -> dict:
         """Parse a line of the template and replace placeholders with actual values."""
         if config["project"]:
             line = re.sub(r"<project_id>", f"{config['project']}", line)
+        if config["name"]:
+            line = re.sub(r"<project_name>", f"{config['name']}", line)
         if config["flowcell"]:
             line = re.sub(r"<flowcell_id>", f"{config['flowcell']}", line)
+        if config["slide"]:
+            line = re.sub(r"<slide_id>", f"{config['slide']}", line)
+        if config["genome_path"]:
+            line = re.sub(r"<genome_path>", f"{config['genome_path']}", line)
+        if config["transcriptome_path"]:
+            line = re.sub(
+                r"<transcriptome_path>", f"{config['transcriptome_path']}", line
+            )
         if config["author"]:
             line = re.sub(r"<author_name>", f"{config['author']}", line)
         if config["signature"] and config["signature"] != "":
@@ -301,14 +377,21 @@ def parse_markdown_templates(config: dict) -> dict:
             line = re.sub(r"<author_signature>|<user_signature>", "", line)
         if config["ngi_path"]:
             line = re.sub(r"<ngi_path>", f"{config['ngi_path']}", line)
+        if config["visium_base_path"]:
+            line = re.sub(r"<visium_base_path>", f"{config['visium_base_path']}", line)
         if config["local_reports_path"]:
             line = re.sub(
                 r"<local_reports_path>", f"{config['local_reports_path']}", line
             )
+        if config["instrument"]:
+            substitution = "elements" if config["instrument"] == "aviti" else "fastq"
+            line = re.sub(r"<instrument_config>", f"{substitution}", line)
         if config["genstat_url"]:
             line = re.sub(r"<genstat_url>", f"{config['genstat_url']}", line)
         if config["charon_url"]:
             line = re.sub(r"<charon_url>", f"{config['charon_url']}", line)
+        if config["script_assets_path"]:
+            line = re.sub(r"<assets_path>", f"{config['script_assets_path']}", line)
         if config["config_path"]:
             line = re.sub(r"<config_path>", f"{config['config_path']}", line)
         return line
@@ -329,6 +412,16 @@ def parse_markdown_templates(config: dict) -> dict:
                 for line in template_file:
                     output_file.write(parse_line(config, line))
 
+    results_dict = {
+        "QC": f"{config['basename']}_QC.qmd" if config["basename"] != "" else "QC.qmd",
+        "Delivery": f"{config['basename']}_Delivery.qmd"
+        if config["basename"] != ""
+        else "Delivery.qmd",
+        "Close": f"{config['basename']}_Close.qmd"
+        if config["basename"] != ""
+        else "Close.qmd",
+    }
+
     # Prepare QC template
     header = prepare_markdown_header(config, "qc")
     write_template("QC")
@@ -341,15 +434,16 @@ def parse_markdown_templates(config: dict) -> dict:
     header = prepare_markdown_header(config, "close")
     write_template("Close")
 
-    return {
-        "QC": f"{config['basename']}_QC.qmd" if config["basename"] != "" else "QC.qmd",
-        "Delivery": f"{config['basename']}_Delivery.qmd"
-        if config["basename"] != ""
-        else "Delivery.qmd",
-        "Close": f"{config['basename']}_Close.qmd"
-        if config["basename"] != ""
-        else "Close.qmd",
-    }
+    if config["best_practice"] == "visium":
+        header = prepare_markdown_header(config, "visium")
+        write_template("Visium")
+        results_dict["Best_Practice"] = (
+            f"{config['basename']}_Visium.qmd"
+            if config["basename"] != ""
+            else "Visium.qmd"
+        )
+
+    return results_dict
 
 
 def generate_markdown_output(config: dict, cmd: str, label: str):
@@ -428,6 +522,11 @@ if __name__ == "__main__":
     # Parse command-line arguments
     args = parse_args()
 
+    if not args.script_assets_path:
+        args.script_assets_path = (
+            pathlib.Path(os.path.dirname(__file__)).joinpath("assets").resolve()
+        )
+
     # Set the logging level based on the command-line argument
     logging.getLogger().setLevel(args.log_level)
 
@@ -438,6 +537,10 @@ if __name__ == "__main__":
     if config["project"]:
         validate_project_id(config["project"])
 
+    # Validate the project Name
+    if config["name"]:
+        validate_project_name(config["name"])
+
     # Validate the flowcell ID
     if config["flowcell"]:
         validate_flowcell_id(config["flowcell"])
@@ -446,6 +549,9 @@ if __name__ == "__main__":
     config["quarto_path"], quarto_version = validate_quarto_path(config["quarto_path"])
 
     # Check if the template file exists
+    extra_templates = (
+        ["Visium_template.qmd"] if config["best_practice"] == "visium" else []
+    )
     validate_templates(config["templates_path"])
 
     # Create the output directory if it doesn't exist
@@ -476,6 +582,11 @@ if __name__ == "__main__":
                 ]
                 if config["output_path"].joinpath(x).is_file()
             ]
+            files_list += (
+                ["Visium.html", "Visium.md"]
+                if config["best_practice"] == "visium"
+                else []
+            )
         if files_list:
             logging.error(
                 "The following files already exist and will not be overwritten:"
@@ -493,9 +604,13 @@ if __name__ == "__main__":
     logging.debug(f"    Quarto Path: {config['quarto_path']}")
     logging.debug(f"    Quarto Version: {quarto_version}")
     logging.debug(f"    Templates Path: {config['templates_path']}")
+    logging.debug(f"    Project Name: {config['name']}")
     logging.debug(f"    Project ID: {config['project']}")
     logging.debug(f"    Flowcell ID: {config['flowcell']}")
     logging.debug(f"    NGI Path: {config['ngi_path']}")
+    if config["best_practice"]:
+        logging.debug(f"    Genome Path: {config['genome_path']}")
+        logging.debug(f"    Transcriptome Path: {config['transcriptome_path']}")
     logging.debug(f"    Author: {config['author']}")
     logging.debug(f"    Author Signature: {config['signature']}")
     logging.debug(f"    Author Email: {config['email']}")
@@ -503,6 +618,7 @@ if __name__ == "__main__":
     logging.debug(f"    Output Format: {config['format']}")
     logging.debug(f"    Output Structure: {config['output_structure']}")
     logging.debug(f"    Local Reports Directory: {config['local_reports_path']}")
+    logging.debug(f"    Assets Directory: {config['script_assets_path']}")
     logging.debug(f"    Timestamp: {args.timestamp}")
     if config["format"] == "markdown":
         logging.debug(f"    Markdown Output Path: {config['output_path']}")
