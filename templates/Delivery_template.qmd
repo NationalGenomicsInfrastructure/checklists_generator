@@ -22,15 +22,14 @@ Open the markdown file in the `reports` directory, and check the following:
 
 If any of the above points are not correct, you can edit the markdown file directly, and then run the following command to re-generate the final report:
 ```bash
-make_report [Project_name]_project_summary.md
+make_report <project_name>_project_summary.md
 ```
 
 - [ ] Transfer the multiqc report and the `reports` directory to the local machine for later use. From your local machine, you can run a command similar to this:
 
 ```bash
-cd <local_reports_path>
-mkdir [Project_name]
-cd [Project_name]
+mkdir <local_reports_path>/<project_name>
+cd <local_reports_path>/<project_name>
 rsync -avP --exclude="*_multiqc_report_data" --exclude="qc_ngi" miarka1:<ngi_path>/ANALYSIS/<project_id>/ .
 ```
 
@@ -45,7 +44,7 @@ screen -S <user_signature>_<project_id>
 
 - [ ] Run TACA to start the soft-stage delivery:
 ```bash
-taca -c <config_path>/sthlm_taca_fastq_delivery.yml deliver --ignore-analysis-status --stage_only project <project_id>
+taca -c <config_path>/sthlm_taca_<instrument_config>_delivery.yml deliver --ignore-analysis-status --stage_only project <project_id>
 ```
 
 ::: {.callout-note}
@@ -61,7 +60,7 @@ dds auth login
 
 - [ ] Run the following command to start the delivery:
 ```bash
-taca -c <config_path>/sthlm_taca_fastq_delivery.yml deliver --cluster dds project <project_id>
+taca -c <config_path>/sthlm_taca_<instrument_config>_delivery.yml deliver --cluster dds project <project_id>
 ```
 
 - [ ] Write a running note that the delivery has been started
@@ -70,11 +69,11 @@ taca -c <config_path>/sthlm_taca_fastq_delivery.yml deliver --cluster dds projec
 Started the delivery to DDS of project `DDS_project_id`. <author_signature>
 ```
 
-- [ ] Check on [Charon](<charon_url>/project/<project_id>) that the _Status_ column changed from _STALE_ to *IN_PROGRESS*
+- [ ] Check on [Charon](<charon_url>/project/<project_id>) that the _Delivery Status_ column changed from _STALE_ to *IN_PROGRESS*
 
 - [ ] Release the delivery to the user:
 ```bash
-taca -c <config_path>/sthlm_taca_fastq_delivery.yml deliver --cluster dds release-dds-project --dds_project <project_name> --no-dds-mail <project_id>
+taca -c <config_path>/sthlm_taca_<instrument_config>_delivery.yml deliver --cluster dds release-dds-project --dds_project <DDS_project_id> --no-dds-mail <project_id>
 ```
 
 - [ ] Close the `screen` session
@@ -91,7 +90,7 @@ taca -c <config_path>/sthlm_taca_fastq_delivery.yml deliver --cluster dds releas
   - Anyone else from the GenStat project description
   - Bioinfo team leader
   - Project coordinator
-- [ ] Set _Project ID_ field to be the project name (format: `<username>_<year>_<index>`)
+- [ ] Set _Project ID_ field to <project_name> (format: `<username>_<year>_<index>`)
 - [ ] Select _Form_ -> _Data delivery_
 - [ ] Complete all the fields
 - [ ] Apply the Macro _Delivery - Raw Data (with fields)_
