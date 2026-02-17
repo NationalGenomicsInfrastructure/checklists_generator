@@ -7,11 +7,15 @@ import pathlib
 import re
 import subprocess
 from datetime import datetime
+from rich.logging import RichHandler
+
 
 logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(message)s",
+    format="%(message)s",
+    # format="%(asctime)s - %(levelname)s - %(message)s",
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[RichHandler()]
 )
 
 
@@ -601,31 +605,32 @@ if __name__ == "__main__":
     # Summarise the run parameters
     logging.debug("-" * 40)
     logging.debug("Run Parameters:")
-    logging.debug(f"    Quarto Path: {config['quarto_path']}")
+    logging.debug(f"    Quarto Path: '{config['quarto_path']}'")
     logging.debug(f"    Quarto Version: {quarto_version}")
-    logging.debug(f"    Templates Path: {config['templates_path']}")
-    logging.debug(f"    Project Name: {config['name']}")
+    logging.debug(f"    Templates Path: '{config['templates_path'].resolve()}'")
+    logging.debug(f"    Project Name: '{config['name']}'")
     logging.debug(f"    Project ID: {config['project']}")
     logging.debug(f"    Flowcell ID: {config['flowcell']}")
-    logging.debug(f"    NGI Path: {config['ngi_path']}")
+    logging.debug(f"    Instrument: {config['instrument']}")
+    logging.debug(f"    NGI Path: '{config['ngi_path']}'")
     if config["best_practice"]:
         logging.debug(f"    Genome Path: {config['genome_path']}")
         logging.debug(f"    Transcriptome Path: {config['transcriptome_path']}")
     logging.debug(f"    Author: {config['author']}")
     logging.debug(f"    Author Signature: {config['signature']}")
     logging.debug(f"    Author Email: {config['email']}")
-    logging.debug(f"    Output Directory: {config['output_path']}")
+    logging.debug(f"    Output Directory: '{config['output_path']}'")
     logging.debug(f"    Output Format: {config['format']}")
     logging.debug(f"    Output Structure: {config['output_structure']}")
-    logging.debug(f"    Local Reports Directory: {config['local_reports_path']}")
-    logging.debug(f"    Assets Directory: {config['script_assets_path']}")
+    logging.debug(f"    Local Reports Directory: '{config['local_reports_path']}'")
+    logging.debug(f"    Assets Directory: '{config['script_assets_path']}'")
     logging.debug(f"    Timestamp: {args.timestamp}")
     if config["format"] == "markdown":
-        logging.debug(f"    Markdown Output Path: {config['output_path']}")
-        logging.debug(f"    Markdown Filename: {config['basename']}.md")
+        logging.debug(f"    Markdown Output Path: '{config['output_path']}'")
+        logging.debug(f"    Markdown Filename: '{config['basename']}.md'")
     else:
-        logging.debug(f"    HTML Output Path: {config['output_path']}")
-        logging.debug(f"    HTML Filename: {config['basename']}.html")
+        logging.debug(f"    HTML Output Path: '{config['output_path']}'")
+        logging.debug(f"    HTML Filename: '{config['basename']}.html'")
     logging.debug("-" * 40)
 
     # Write the markdown template, including the dynamic content

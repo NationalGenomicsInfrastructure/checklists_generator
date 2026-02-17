@@ -59,7 +59,7 @@ Once all the checks are done:
 
 ### Closing the project on LIMS
 
-Go to the _Project and Samples_ tab and search for <project name>.
+Go to the _Project and Samples_ tab and search for <project_name>.
 
 - [ ] Set the project status to _Closed_
 - [ ] Click on _Save_
