@@ -4,9 +4,9 @@ Python script to dynamically generate the bioinfo production checklists for QC, 
 
 The templates are based on the following internal documents and versions:
 
-- Bioinfo QC: _1617:**4**_
-- Delivery: _1286:**22**_
-- Close: _1262:**17**_
+- Bioinfo QC: _1617:**6**_
+- Delivery: _1286:**23**_
+- Close: _1262:**18**_
 
 ## Requirements
 
