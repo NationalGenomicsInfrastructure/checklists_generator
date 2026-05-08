@@ -99,6 +99,19 @@ def parse_args():
         choices=["illumina", "aviti"],
     )
     parser.add_argument(
+        "--delivery-type",
+        type=str,
+        help="Delivery type for the checklist.",
+        default=None,
+        choices=["standard", "runfolder"],
+    )
+    parser.add_argument(
+        "--runfolder-path",
+        type=pathlib.Path,
+        help="Path to the runfolder on the ngi_data server (used with --delivery-type runfolder).",
+        default=None,
+    )
+    parser.add_argument(
         "--best-practice",
         type=str,
         help="Author signature.",
@@ -221,6 +234,10 @@ def set_run_parameters(args):
         if not config["output_path"].is_dir():
             config["output_path"].mkdir(parents=True, exist_ok=True)
 
+    # Set default for delivery_type
+    if not config.get("delivery_type"):
+        config["delivery_type"] = "standard"
+
     return config
 
 
@@ -274,14 +291,14 @@ def validate_quarto_path(quarto_path: pathlib.Path):
     return pathlib.Path(quarto_path), quarto_version
 
 
-def validate_templates(template_path: pathlib.Path, extra_templates: list = []):
+def validate_templates(template_path: pathlib.Path, extra_templates: list = [], delivery_type: str = "standard"):
     """Validate the template path."""
     if not template_path.is_dir():
         logging.error("The specified template path does not exist.")
         exit(1)
     required_templates = [
         "QC_template.qmd",
-        "Delivery_template.qmd",
+        f"Delivery_{delivery_type}_template.qmd",
         "Close_template.qmd",
     ] + extra_templates
     missing_templates = [
@@ -293,6 +310,10 @@ def validate_templates(template_path: pathlib.Path, extra_templates: list = []):
         logging.error(
             f"The following required templates are missing: {', '.join(missing_templates)}"
         )
+        exit(1)
+    partial_path = template_path / "partials" / f"qc_{delivery_type}.qmd"
+    if not partial_path.is_file():
+        logging.error(f"Required QC partial template not found: {partial_path}")
         exit(1)
 
 
@@ -398,23 +419,36 @@ def parse_markdown_templates(config: dict) -> dict:
             line = re.sub(r"<assets_path>", f"{config['script_assets_path']}", line)
         if config["config_path"]:
             line = re.sub(r"<config_path>", f"{config['config_path']}", line)
+        if config.get("runfolder_path"):
+            line = re.sub(r"<runfolder_path>", f"{config['runfolder_path']}", line)
         return line
 
-    def write_template(label: str):
+    def write_template(label: str, template_name: str = None):
         """Write the template content to the output file."""
         outname = (
             f"{config['basename']}_{label}.qmd"
             if config["basename"] != ""
             else f"{label}.qmd"
         )
+        template_file_name = f"{template_name or label}_template.qmd"
         with open(outname, "w") as output_file:
             output_file.write(header)
             # Write the template content
             with open(
-                config["templates_path"].joinpath(f"{label}_template.qmd"), "r"
+                config["templates_path"].joinpath(template_file_name), "r"
             ) as template_file:
                 for line in template_file:
-                    output_file.write(parse_line(config, line))
+                    if line.strip() == "<qc_type_section>":
+                        partial_path = (
+                            config["templates_path"]
+                            / "partials"
+                            / f"qc_{config['delivery_type']}.qmd"
+                        )
+                        with open(partial_path, "r") as partial_file:
+                            for partial_line in partial_file:
+                                output_file.write(parse_line(config, partial_line))
+                    else:
+                        output_file.write(parse_line(config, line))
 
     results_dict = {
         "QC": f"{config['basename']}_QC.qmd" if config["basename"] != "" else "QC.qmd",
@@ -432,7 +466,7 @@ def parse_markdown_templates(config: dict) -> dict:
 
     # Prepare Delivery template
     header = prepare_markdown_header(config, "delivery")
-    write_template("Delivery")
+    write_template("Delivery", template_name=f"Delivery_{config['delivery_type']}")
 
     # Prepare Close template
     header = prepare_markdown_header(config, "close")
@@ -556,7 +590,7 @@ if __name__ == "__main__":
     extra_templates = (
         ["Visium_template.qmd"] if config["best_practice"] == "visium" else []
     )
-    validate_templates(config["templates_path"])
+    validate_templates(config["templates_path"], extra_templates, config["delivery_type"])
 
     # Create the output directory if it doesn't exist
     config["output_path"].mkdir(parents=True, exist_ok=True)

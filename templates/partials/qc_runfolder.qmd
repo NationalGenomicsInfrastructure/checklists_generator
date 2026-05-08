@@ -1,0 +1,45 @@
+### Check Yield and quality QC
+
+For each lane, check the following:
+
+- [ ] Total reads (see @tbl-yields)
+- [ ] Q30 (see @tbl-q30)
+- [ ] If the total yield and quality for the project has been reached enter the sequencing date in _All samples sequenced_
+- [ ] Put your signature in the _Signature All samples sequenced_
+- [ ] Check other fields for correctness
+- [ ] Click on _Record Changes | Run_
+
+In the table at the bottom of the page, the _QC_ column refers to whether the sample has to be delivered or not.
+
+- [ ] Set the value of the _QC_ column accordingly (i.e. whether the sample has to be delivered or not)
+- [ ] Set the value of the _Set App QC_ column to _N/A_
+- [ ] Click on _Record Changes | Run_
+
+
+### Transfer runfolder to Miarka
+
+- [ ] Log into the preproc server
+- [ ] Run TACA to initiate the taring and transfer of the runfolder:
+
+```bash
+taca analysis transfer --runfolder-project <project_id> [--exclude-lane x,y] <runfolder_path>/<flowcell_id>
+```
+
+::: {.callout-note}
+Use `--exclude-lane` to exclude any lanes not to be delivered to this user. Lanes to exclude need to be given as a list separated with commas and without white spaces.
+This command will initiate taring of the flowcell, create an MD5 checksum file, and transfer both to the `incoming` directory on Miarka.
+:::
+
+- [ ] Write a running note with the exact command used:
+
+```text
+Taring and transfer to Miarka initiated for runfolder <flowcell_id> (project <project_id>).
+Command: taca analysis transfer --runfolder-project <project_id> <runfolder_path>/<flowcell_id>
+<author_signature>
+```
+
+Open the [bioinfo tab](<genstat_url>/bioinfo/<project_id>):
+
+- [ ] Set the _fastq_screen_ field to _N/A_
+- [ ] Click on _Save_
+

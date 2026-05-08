@@ -1,0 +1,127 @@
+
+## Data delivery
+
+### Generating reports
+
+- [ ] Log into Miarka
+- [ ] Create the project ANALYSIS directory:
+```bash
+mkdir -p <ngi_path>/ANALYSIS/<project_id>
+```
+- [ ] Move to the project directory and submit the report job:
+```bash
+cd <ngi_path>/ANALYSIS/<project_id> && ngi_reports project_summary -p <project_id> -s '<author_name>'
+```
+
+This step creates the `reports` directory.
+
+Open the markdown file in the `reports` directory and make the following manual adjustments:
+
+- [ ] Under **Project Information**, add a `Sequencing Runs` entry:
+```
+Sequencing Runs
+:    <flowcell_id> [lane] ([sample ID], [user sample name])
+```
+- [ ] Under **Data Processing**, remove the section about cross-contamination check
+- [ ] Under **Additions to, deviations from, or notes on the procedure**, add:
+```
+1) Delivery of the raw data only, no bcl conversion or demultiplexing was performed.
+```
+- [ ] Remove the entire section about sample naming
+
+Once all edits are done, regenerate the HTML report:
+```bash
+make_report <project_name>_project_summary.md
+```
+
+- [ ] Transfer the `reports` directory to the local machine. From your local machine:
+```bash
+mkdir <local_reports_path>/<project_name>
+cd <local_reports_path>/<project_name>
+rsync -avP miarka1:<ngi_path>/ANALYSIS/<project_id>/reports/ reports/
+```
+
+### Runfolder DDS delivery
+
+- [ ] Open a `screen` session
+```bash
+screen -S <user_signature>_<project_id>
+```
+
+- [ ] Log into DDS
+```bash
+dds auth login
+```
+The command prompt will ask for your username, password and second factor authentication.
+
+- [ ] Run TACA to start the delivery:
+```bash
+taca -c <config_path>/sthlm_taca_runfolder_delivery.yml deliver --cluster dds project --fc-delivery <flowcell_id>_<project_id> <project_id>
+```
+
+- [ ] Note the DDS project ID returned by the command
+
+- [ ] In [Charon](<charon_url>/project/<project_id>), manually update the delivery information:
+  - Set the _Delivery token_ to the DDS project ID
+  - Mark it as _Uploaded_
+  - Fill in the DDS project ID in the _Delivery projects_ field
+
+- [ ] Write a running note that the delivery has been started
+
+```text
+Started the delivery to DDS of project `DDS_project_id`. <author_signature>
+```
+
+- [ ] Once the upload is finished, release the delivery to the user:
+```bash
+taca -c <config_path>/sthlm_taca_runfolder_delivery.yml deliver --cluster dds release-dds-project --dds_project <DDS_project_id> --no-dds-mail <project_id>
+```
+
+- [ ] Close the `screen` session
+
+
+### Notifying the user
+
+- [ ] Log into Zendesk
+- [ ] Create a new ticket
+- [ ] Add the contact person as a _Requester_
+- [ ] In CC, add:
+  - PI
+  - Bioinfo contact (user end)
+  - Anyone else from the GenStat project description
+- [ ] as follower add:
+  - Data flow area lead (optional)
+  - Responsible project coordinator
+  - (for Application projects) lab responsible
+  - (for Application projects) Applications lab team leader
+- [ ] Set _Project name_ field to <project_name> (format: `<username>_<year>_<index>`)
+- [ ] Select _Form_ -> _Data delivery_
+- [ ] Complete all the fields
+- [ ] Apply the Macro _Runfolder delivery (with fields)_
+- [ ] Add the following attachments to the email:
+  - Project summary report
+- [ ] Submit the ticket as _Solved_
+
+Open the LIMS _Project summary_ page:
+
+- On GenStat, go to the _Samples_ tab
+- Click on any of the samples in the _Sample_ column (the first time to open the LIMS login page, and the second time to open the samples view)
+- Click on the _Project Summary_ button
+
+Set the following fields:
+
+- [ ] Enter the delivery date in _All raw data delivered_
+- [ ] Put your signature in the _Signature All raw data delivered_
+- [ ] Click on _Record Changes | Run_
+
+On GenStat, open the [bioinfo tab](<genstat_url>/bioinfo/<project_id>):
+
+- [ ] Enter the delivery date in the _Data delivered_ field
+- [ ] Click on _Save_
+- [ ] Write a running note that the delivery has been completed
+
+```text
+All data delivered to the DDS project `DDS_project_id` and user informed by email. <author_signature>
+```
+
+---
