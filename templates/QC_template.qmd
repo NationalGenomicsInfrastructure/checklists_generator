@@ -9,124 +9,36 @@ If you provided the project id when generating this checklist, you can access it
 :::
 
 - [ ] Check the running notes for anything that needs to be taken into account during the QC
+- [ ] Check the number of lanes/units
+ ordered and obtained
 
-## Setting values of QC boxes
-
-Click on the [bioinfo tab](<genstat_url>/bioinfo/<project_id>) and the [flowcell page](<genstat_url>/flowcells/<flowcell_id>)
-
-On the [flowcell page](<genstat_url>/flowcells/<flowcell_id>), check the following, and update the [bioinfo tab](<genstat_url>/bioinfo/<project_id>) checklist accordingly:
-
-- [ ] Total clusters and clusters per lane (see @tbl-illumina-yields, @tbl-elements-yields and @tbl-units-yields)
-- [ ] PhiX error rate -> It should be below 2% (unless more than 1% PhiX was added; for Element runs and Illumina runs, the PhiX sequencing error rate for read 1 and read 2 can be found in the sequencing step in LIMS)
-- [ ] Q30 (see @tbl-q30)
-- [ ] Undetermined reads
-    - [ ] Total number is below threshold (see @tbl-undetermined)
-    - [ ] The majority belong to the same index (e.g. PhiX)
-- [ ] The fraction number of any unexpected indexes and if they are similar to any index in the project
-
-> For non-accredited methods, the method specific check boxes shall be set to N/A.
->
-> The undetermined reads checkbox needs to be set to **FAIL** only if the data cannot be delivered to the user, for example due to a contamination leading to high undetermined reads.
->
-> In cases where data is going to be processed with unresolved unexpected indexes, set the "unexpected indexes" check box to WARN for all projects in that lane
->
-> We currently do not guarantee a specific yield for Element runs towards the user and commonly see yields as low as 50% of these specifications. Nevertheless, the sequencing operator needs to be notified of lanes with low yields.
->
-> For Element runs, no limit for % Q30 has yet been set.
-
-::: {.callout-tip title="Universal units yield cal"}
-For projects setup with universal units, the lane project yield should reach at least 90% of the unit size. For example if the project was sequenced aiming for 1 unit, it should reach at least 600M * 0.9 = 540 M reads. For project setup with specific flowcell type, the lane project yield should reach the full amount of the allocated yield. For example, if a project was set up for 1/2 lane of a NovaSeqXPlus 25B flowcell, the project should reach 3000 M / 2 = 1500 M reads.
-
-In some cases the user requests (or the library prep demands) an increased addition of PhiX control library. In these cases, the minimum required lane project yield decreases by the corresponding fraction of ordered reads of the additional PhiX.
-
-For example if a project is set up with 2 universal units and a target of 25% PhiX, the required project yield changes to:
-
-`(required project yield) - (unit size) * (PhiX target fraction - standard PhiX target fraction) =>`
-`(2 * 540 M) - (2 * 600 M) * (0.25 - 0.01) = 1080M - 288M = 792M`
-
-The guaranteed sample yield can be calculated as follows:
-
-`([required lane (project) yield] / [sample number]) * 0.75`
-:::
-
-::: {.callout-important}
-For the following project setups and library preparation methods, the sample QC does not influence the delivery decision of the project and can hence be skipped:
-
-- user supplied libraries
-- all in-house short reads amplicon methods (16S / 18S / indexing)
-- RADseq libraries
-- projects with user QC
-- projects with only one sample
-- in-house single cell libraries (required sample yields will be set and checked by the single cell team at a later stage)
-
-The check boxes will still need to be filled in for lane (project) yield results.
-:::
-
-- [ ] Save the recorded changes on the [bioinfo tab](<genstat_url>/bioinfo/<project_id>)
-
-On the project page:
-
-- [ ] Check the number of lanes ordered and obtained
-
-## Documenting the status in the Clarity LIMS
-
-Open the LIMS *BCL conversion* page:
-
-- On GenStat, go to the *Samples* tab
-- Click on any of the samples in the *Sample* column (the first time to open the LIMS login page, and the second time to open the samples view)
-- Click on the *BCL conversion* button
-
-On the LIMS page:
-
-::: {.callout-important}
-Although possible, it is better to process one sample at the time
-:::
-
-- [ ] In the dropdown menu, change from *Container* to *Project*
-- [ ] Click on *add group* for the samples to process
-- [ ] Click on *Begin work* at the top right corner
-
-In the next section:
-
-- [ ] Update the Document version (current version is **5**)
-- [ ] Click on *BCL conversion and demultiplexing*
-
-Once the import is complete:
-
-- [ ] Update the *include reads* column
-    - [ ] From the dropdown menu, select *Include reads*
-    - [ ] From the second dropdown menu, select *Yes*
-    - [ ] Click on *Apply*
-- [ ] Double-check that the *Include reads* column is set to *Yes* for all samples
-- [ ] Click on *Next step* at the top right corner
-
-On the next page:
-
-- [ ] Select *Mark protocol as complete* in the dropdown menu
-- [ ] Click on *Finish step* at the top right corner
-
-Re-open the LIMS *Project summary* page:
+## Aggregate reads in the LIMS _Project summary_ page
+Open the LIMS _Project summary_ page:
 
 - On GenStat, go to the *Samples* tab
 - Click on any of the samples in the *Sample* column (the first time to open the LIMS login page, and the second time to open the samples view)
 - Click on the *Project Summary* button
 
 On the LIMS page:
+- [ ] Click on _Reads Aggregation | Run_
 
-::: {.callout-warning}
-This action should be performed only if no more samples are expected to be sequenced
-:::
 
-- [ ] Enter the sequencing date in *All samples sequenced*
-- [ ] Put your signature in the *Signature All samples sequenced*
+### Check Yield and quality QC
+
+For samples, check the following:
+- [ ] Total reads (based on number of samples and total number of reads ordered)
+- [ ] Q30 (see @tbl-q30)
+- [ ] If yield and quality has been reached enter the sequencing date in _All samples sequenced_
+- [ ] Put your signature in the _Signature All samples sequenced_
 - [ ] Check other fields for correctness
-- [ ] Click on *Reads Aggregation | Run*
+- [ ] Click on _Record Aggregation | Run_
 
 In the table at the bottom of the page, the *QC* column refers to whether the sample has to be delivered or not.
 
-- [ ] Set the value of the *QC* column accordingly (i.e. whether the sample has to be delivered of not)
-- [ ] Set the value of the *Set App QC* column to *N/A* (unless they are RNA-seq samples)
-- [ ] Click on *Record Changes | Run*
+- [ ] Set the value of the _QC_ column accordingly (i.e. whether the sample has to be delivered or not)
+- [ ] Set the value of the _Set App QC_ column to _N/A_ (unless they are RNA-seq samples)
+- [ ] Click on _Record Changes | Run_
+
 
 ### Data organisation on the UPPMAX cluster
 
@@ -162,7 +74,7 @@ On Miarka:
 ngi_pipeline_start.py qc project <ngi_path>/DATA/<project_id>
 ```
 
-- [ ] Write a running note saying that the fastqc and fast screen jobs have been started
+- [ ] Write a running note saying that the fastqc and fastq_screen jobs have been started
 
 ```text
 Data organized and QC started for <project_id> samples on <flowcell_id>. <author_signature>
@@ -194,13 +106,14 @@ In the command line output:
 
 Open the MultiQC report and check the following:
 
-- [ ] The FastQ Screen results match the expectations, based on the information about the samples
-- [ ] The duplication levels are within acceptable limits
-- [ ] Mean Quality Scores are in the green zone
+  - [ ] The FastQ Screen results match the expectations, based on the information about the samples
+  - [ ] The duplication levels are within acceptable limits
+  - [ ] Mean Quality Scores are in the green zone
+  - [ ] The "Per Base N Content" does not exceed 10% in any given cycle or 5% in more than 10% of the cycles
 
 Open the [bioinfo tab](<genstat_url>/bioinfo/<project_id>):
 
-- [ ] Fill all the fields according to the results of the MultiQC report
+- [ ] Fill all the fastq_screen field according to the results of the MultiQC report
 
 ::: {.callout-tip title="Write a running note [OPTIONAL]"}
 - [ ] Write a running note if there are things to bring up from the report: `MultiQC report has been generated for <project_id>. <author_signature>`
@@ -231,6 +144,7 @@ Positive and negative controls are valid for a calendar year, and can be found i
 | NovaSeqXPlus |            1.5B             |       750        |
 | NovaSeqXPlus |             10B             |       1200       |
 | NovaSeqXPlus |             25B             |       3000       |
+| NovaSeqXPlus |          Universal          |       600        |
 
 : Lane yields for Illumina flowcells. {#tbl-illumina-yields .striped .hover}
 

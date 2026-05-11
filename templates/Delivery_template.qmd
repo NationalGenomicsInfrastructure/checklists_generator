@@ -20,7 +20,7 @@ Open the markdown file in the `reports` directory, and check the following:
 - [ ] No deviation note or notification of manual steps should be added
 - [ ] No new samples should be added
 
-If any of the above points are not correct, you can edit the markdown file directly, and then run the following command to re-generate the final report:
+If any of the above points are incorrect, you can edit the markdown file directly, and then run the following command to re-generate the final report:
 ```bash
 make_report <project_name>_project_summary.md
 ```
@@ -35,7 +35,7 @@ rsync -avP --exclude="*_multiqc_report_data" --exclude="qc_ngi" miarka1:<ngi_pat
 
 ### Standard DDS delivery
 
-- [ ] Check on [Charon](<charon_url>/project/<project_id>) that the _Status_ column is _STALE_ for all samples to be delivered
+- [ ] Check in [Charon](<charon_url>/project/<project_id>) that the _Status_ column is _STALE_ for all samples to be delivered
 
 - [ ] Open a `screen` session
 ```bash
@@ -51,12 +51,14 @@ taca -c <config_path>/sthlm_taca_<instrument_config>_delivery.yml deliver --igno
 Remember to change the above command if the project was processed with Sarek (`wgs`) or NGI-RNAseq (`rna`).
 :::
 
-- [ ] Check on [Charon](<charon_url>/project/<project_id>) that the _Delivery status_ column is _STAGED_ for all samples
+- [ ] Check in [Charon](<charon_url>/project/<project_id>) that the _Delivery status_ column is _STAGED_ for all samples
 
 - [ ] Log into DDS
 ```bash
 dds auth login
 ```
+The command prompt will ask for your username, password and second factor authentication.
+
 
 - [ ] Run the following command to start the delivery:
 ```bash
@@ -69,7 +71,7 @@ taca -c <config_path>/sthlm_taca_<instrument_config>_delivery.yml deliver --clus
 Started the delivery to DDS of project `DDS_project_id`. <author_signature>
 ```
 
-- [ ] Check on [Charon](<charon_url>/project/<project_id>) that the _Delivery Status_ column changed from _STALE_ to *IN_PROGRESS*
+- [ ] Check in [Charon](<charon_url>/project/<project_id>) that the _Delivery Status_ column changed from _STALE_ to *IN_PROGRESS*
 
 - [ ] Release the delivery to the user:
 ```bash
@@ -84,13 +86,16 @@ taca -c <config_path>/sthlm_taca_<instrument_config>_delivery.yml deliver --clus
 - [ ] Log into Zendesk
 - [ ] Create a new ticket
 - [ ] Add the contact person as a _Requester_
-- [ ] In CC, add the following people:
+- [ ] In CC, add:
   - PI
   - Bioinfo contact (user end)
   - Anyone else from the GenStat project description
-  - Bioinfo team leader
-  - Project coordinator
-- [ ] Set _Project ID_ field to <project_name> (format: `<username>_<year>_<index>`)
+- [ ] as follower add:
+  - Data flow area lead (optional)
+  - Responsible project coordinator
+  - (for Application projects) lab responsible
+  - (for Application projects) Applications lab team leader
+- [ ] Set _Project name_ field to <project_name> (format: `<username>_<year>_<index>`)
 - [ ] Select _Form_ -> _Data delivery_
 - [ ] Complete all the fields
 - [ ] Apply the Macro _Delivery - Raw Data (with fields)_
@@ -98,8 +103,6 @@ taca -c <config_path>/sthlm_taca_<instrument_config>_delivery.yml deliver --clus
   - Project report
   - Info.txt files
   - MultiQC report
-  - Acknowledgement
-  - Delivery README
 - [ ] Submit the ticket as _Solved_
 
 Open the LIMS _Project summary_ page:
