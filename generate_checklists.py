@@ -15,7 +15,7 @@ logging.basicConfig(
     # format="%(asctime)s - %(levelname)s - %(message)s",
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[RichHandler()]
+    handlers=[RichHandler()],
 )
 
 
@@ -388,8 +388,10 @@ def parse_markdown_templates(config: dict) -> dict:
                 r"<local_reports_path>", f"{config['local_reports_path']}", line
             )
         if config["instrument"]:
-            substitution = "elements" if config["instrument"] == "aviti" else "fastq"
+            substitution = "element" if config["instrument"] == "aviti" else "fastq"
             line = re.sub(r"<instrument_config>", f"{substitution}", line)
+            substitution = "aviti" if config["instrument"] == "aviti" else ""
+            line = re.sub(r"<instrument_path>", f"{substitution}", line)
         if config["genstat_url"]:
             line = re.sub(r"<genstat_url>", f"{config['genstat_url']}", line)
         if config["charon_url"]:
