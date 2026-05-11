@@ -7,7 +7,7 @@ On [GenStat](https://genomics-status.scilifelab.se/project/<project_id>), go to 
 
  - [ ] Check that the _Project Folder_ link is working
 
-In the _Project information_ tab, and check the following:
+Go to the _Project information_ tab, and check the following:
 
 - [ ] The _Lanes Ordered_ matches the _Lanes started_
 - [ ] The number of samples is correct in both _Samples_ and _Charon Status_ tables
@@ -39,11 +39,11 @@ On [GenStat](https://genomics-status.scilifelab.se/project/<project_id>), go to 
 
 On the LIMS _Project summary_ page, check the following:
 
-- [ ] All samples sequence field is signed
-- [ ] If required, Best Practice analysis field is signed
-- [ ] All raw data delivered field is signed
+- [ ] _All samples sequenced_ field is signed
+- [ ] If required, _Best Practice analysis_ field is signed
+- [ ] _All raw data delivered_ field is signed
 - [ ] All samples show the correct number of reads
-  - If not, click on _Reads aggregation | Run_ and then _Record changes | Run_
+  - If not, click on _Reads aggregation | Run_ and then _Record changes | Run_ and double check the report send to the user
 - [ ] _QC_ field has the correct status
 - [ ] _Status (manual)/Set Status (manual)_ field is set to either _Finished_ or _Aborted_
   - If not, set it to _Finished_, but leave the _Aborted_ as is, if any
