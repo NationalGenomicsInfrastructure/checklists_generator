@@ -15,3 +15,5 @@ config.json
 /.quarto/
 
 **/*.quarto_ipynb
+
+**.pyc
