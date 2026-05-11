@@ -1,5 +1,6 @@
-
 ## Monitoring / documenting the bioinformatic QC on Genomic Status
+
+> Note: The procedures in this document apply for data generated both by Illumina and Element sequencing machines at National Genomics Infrastructure (NGI) Stockholm, Science for Life Laboratory. Only the Illumina data flow is accredited.
 
 Open [GenStat deliveries](<genstat_url>/deliveries) and find the project you are interested in, and click on the project id to open the project status page.
 
@@ -13,20 +14,55 @@ If you provided the project id when generating this checklist, you can access it
 
 Click on the [bioinfo tab](<genstat_url>/bioinfo/<project_id>) and the [flowcell page](<genstat_url>/flowcells/<flowcell_id>)
 
-On the flowcell page, check the following:
+On the [flowcell page](<genstat_url>/flowcells/<flowcell_id>), check the following, and update the [bioinfo tab](<genstat_url>/bioinfo/<project_id>) checklist accordingly:
 
-- [ ] Total clusters and clusters per lane (see @tbl-yields)
-- [ ] PhiX error rate -> It should be below 2% (unless more than 1% PhiX was added)
+- [ ] Total clusters and clusters per lane (see @tbl-illumina-yields, @tbl-elements-yields and @tbl-units-yields)
+- [ ] PhiX error rate -> It should be below 2% (unless more than 1% PhiX was added; for Element runs and Illumina runs, the PhiX sequencing error rate for read 1 and read 2 can be found in the sequencing step in LIMS)
 - [ ] Q30 (see @tbl-q30)
 - [ ] Undetermined reads
-  - [ ] Total number is below threshold (see @tbl-undetermined)
-  - [ ] The majority belong to the same index (e.g. PhiX)
+    - [ ] Total number is below threshold (see @tbl-undetermined)
+    - [ ] The majority belong to the same index (e.g. PhiX)
 - [ ] The fraction number of any unexpected indexes and if they are similar to any index in the project
 
-On the bioinfo page:
+> For non-accredited methods, the method specific check boxes shall be set to N/A.
+>
+> The undetermined reads checkbox needs to be set to **FAIL** only if the data cannot be delivered to the user, for example due to a contamination leading to high undetermined reads.
+>
+> In cases where data is going to be processed with unresolved unexpected indexes, set the "unexpected indexes" check box to WARN for all projects in that lane
+>
+> We currently do not guarantee a specific yield for Element runs towards the user and commonly see yields as low as 50% of these specifications. Nevertheless, the sequencing operator needs to be notified of lanes with low yields.
+>
+> For Element runs, no limit for % Q30 has yet been set.
 
-- [ ] Set the status according to the results above
-- [ ] Click save
+::: {.callout-tip title="Universal units yield cal"}
+For projects setup with universal units, the lane project yield should reach at least 90% of the unit size. For example if the project was sequenced aiming for 1 unit, it should reach at least 600M * 0.9 = 540 M reads. For project setup with specific flowcell type, the lane project yield should reach the full amount of the allocated yield. For example, if a project was set up for 1/2 lane of a NovaSeqXPlus 25B flowcell, the project should reach 3000 M / 2 = 1500 M reads.
+
+In some cases the user requests (or the library prep demands) an increased addition of PhiX control library. In these cases, the minimum required lane project yield decreases by the corresponding fraction of ordered reads of the additional PhiX.
+
+For example if a project is set up with 2 universal units and a target of 25% PhiX, the required project yield changes to:
+
+`(required project yield) - (unit size) * (PhiX target fraction - standard PhiX target fraction) =>`
+`(2 * 540 M) - (2 * 600 M) * (0.25 - 0.01) = 1080M - 288M = 792M`
+
+The guaranteed sample yield can be calculated as follows:
+
+`([required lane (project) yield] / [sample number]) * 0.75`
+:::
+
+::: {.callout-important}
+For the following project setups and library preparation methods, the sample QC does not influence the delivery decision of the project and can hence be skipped:
+
+- user supplied libraries
+- all in-house short reads amplicon methods (16S / 18S / indexing)
+- RADseq libraries
+- projects with user QC
+- projects with only one sample
+- in-house single cell libraries (required sample yields will be set and checked by the single cell team at a later stage)
+
+The check boxes will still need to be filled in for lane (project) yield results.
+:::
+
+- [ ] Save the recorded changes on the [bioinfo tab](<genstat_url>/bioinfo/<project_id>)
 
 On the project page:
 
@@ -34,11 +70,11 @@ On the project page:
 
 ## Documenting the status in the Clarity LIMS
 
-Open the LIMS _BCL conversion_ page:
+Open the LIMS *BCL conversion* page:
 
-- On GenStat, go to the _Samples_ tab
-- Click on any of the samples in the _Sample_ column (the first time to open the LIMS login page, and the second time to open the samples view)
-- Click on the _BCL conversion_ button
+- On GenStat, go to the *Samples* tab
+- Click on any of the samples in the *Sample* column (the first time to open the LIMS login page, and the second time to open the samples view)
+- Click on the *BCL conversion* button
 
 On the LIMS page:
 
@@ -46,36 +82,34 @@ On the LIMS page:
 Although possible, it is better to process one sample at the time
 :::
 
-- [ ] In the dropdown menu, change from _Container_ to _Project_
-- [ ] Click on _add group_ for the samples to process
-- [ ] Click on _Begin work_ at the top right corner
+- [ ] In the dropdown menu, change from *Container* to *Project*
+- [ ] Click on *add group* for the samples to process
+- [ ] Click on *Begin work* at the top right corner
 
 In the next section:
 
-- [ ] Update the Document version
-- [ ] Click on _BCL conversion and demultiplexing_
+- [ ] Update the Document version (current version is **5**)
+- [ ] Click on *BCL conversion and demultiplexing*
 
 Once the import is complete:
 
-- [ ] Update the _include reads_ column
-  - [ ] From the dropdown menu, select _Include reads_
-  - [ ] From the second dropdown menu, select _Yes_
-  - [ ] Click on _Apply_
-
-- [ ] Double-check that the _Include reads_ column is set to _Yes_ for all samples
-- [ ] Click on _Next step_ at the top right corner
+- [ ] Update the *include reads* column
+    - [ ] From the dropdown menu, select *Include reads*
+    - [ ] From the second dropdown menu, select *Yes*
+    - [ ] Click on *Apply*
+- [ ] Double-check that the *Include reads* column is set to *Yes* for all samples
+- [ ] Click on *Next step* at the top right corner
 
 On the next page:
 
-- [ ] Select _Mark protocol as complete_ in the dropdown menu
-- [ ] Click on _Finish step_ at the top right corner
+- [ ] Select *Mark protocol as complete* in the dropdown menu
+- [ ] Click on *Finish step* at the top right corner
 
+Re-open the LIMS *Project summary* page:
 
-Re-open the LIMS _Project summary_ page:
-
-- On GenStat, go to the _Samples_ tab
-- Click on any of the samples in the _Sample_ column (the first time to open the LIMS login page, and the second time to open the samples view)
-- Click on the _Project Summary_ button
+- On GenStat, go to the *Samples* tab
+- Click on any of the samples in the *Sample* column (the first time to open the LIMS login page, and the second time to open the samples view)
+- Click on the *Project Summary* button
 
 On the LIMS page:
 
@@ -83,31 +117,40 @@ On the LIMS page:
 This action should be performed only if no more samples are expected to be sequenced
 :::
 
-- [ ] Enter the sequencing date in _All samples sequenced_
-- [ ] Put your signature in the _Signature All samples sequenced_
+- [ ] Enter the sequencing date in *All samples sequenced*
+- [ ] Put your signature in the *Signature All samples sequenced*
 - [ ] Check other fields for correctness
-- [ ] Click on _Reads Aggregation | Run_
+- [ ] Click on *Reads Aggregation | Run*
 
-In the table at the bottom of the page, the _QC_ column refers to whether the sample has to be delivered or not.
+In the table at the bottom of the page, the *QC* column refers to whether the sample has to be delivered or not.
 
-- [ ] Set the value of the _QC_ column accordingly (i.e. whether the sample has to be delivered of not)
-- [ ] Set the value of the _Set App QC_ column to _N/A_ (unless they are RNA-seq samples)
-- [ ] Click on _Record Changes | Run_
+- [ ] Set the value of the *QC* column accordingly (i.e. whether the sample has to be delivered of not)
+- [ ] Set the value of the *Set App QC* column to *N/A* (unless they are RNA-seq samples)
+- [ ] Click on *Record Changes | Run*
 
 ### Data organisation on the UPPMAX cluster
 
 - [ ] Log into Miarka
+
+::: {.callout-tip title="Activate the production environment [OPTIONAL]"}
+`source /vulpes/ngi/production/latest/conf/sourceme_sthlm.sh && source activate NGI`
+:::
+
 - [ ] Start the data organisation by running the following command:
+
 ```bash
+cd /proj/ngi2016003/incoming/<instrument_path>
+
 ngi_pipeline_start.py organize flowcell <flowcell_id> -p <project_id>
 ```
+
 ::: {.callout-tip}
 The `project_id` and `flowcell_id` can be found either in the GenStat running notes or at the top of the bioinfo tab
 :::
 
 Once the data organisation is complete:
 
-- [ ] Check on [Charon](<charon_url>/project/<project_id>) that the _Status_ column changed from _FRESH_ to _STALE_
+- [ ] Check on [Charon](<charon_url>/project/<project_id>) that the *Status* column changed from *FRESH* to *STALE*
 
 ### Basic QC reports and contamination screen
 
@@ -128,6 +171,7 @@ Data organized and QC started for <project_id> samples on <flowcell_id>. <author
 - [ ] Sign the note and add the required tags
 
 You can check that the jobs have been submitted or are running by using the following command:
+
 ```bash
 jobinfo | grep <project_id>
 ```
@@ -137,6 +181,7 @@ jobinfo | grep <project_id>
 Once the jobs are finished (i.e. the `jobinfo` command does not return any entry):
 
 - [ ] Move to the project directory and submit the multiqc job:
+
 ```bash
 cd <ngi_path>/ANALYSIS/<project_id> && multiqc qc_ngi
 ```
@@ -145,13 +190,13 @@ In the command line output:
 
 - [ ] Check that the total number of reports matches the number of samples (it should be twice the number of samples)
 
-- [ ] If opened, refresh the GenStat page, so that the MultiQC report will be listed in the _Reports_ tab
+- [ ] If opened, refresh the GenStat page, so that the MultiQC report will be listed in the *Reports* tab
 
 Open the MultiQC report and check the following:
 
-  - [ ] The FastQ Screen results match the expectations, based on the information about the samples
-  - [ ] The duplication levels are within acceptable limits
-  - [ ] Mean Quality Scores are in the green zone
+- [ ] The FastQ Screen results match the expectations, based on the information about the samples
+- [ ] The duplication levels are within acceptable limits
+- [ ] Mean Quality Scores are in the green zone
 
 Open the [bioinfo tab](<genstat_url>/bioinfo/<project_id>):
 
@@ -170,46 +215,82 @@ Open the [bioinfo tab](<genstat_url>/bioinfo/<project_id>):
 
 Positive and negative controls are valid for a calendar year, and can be found in their own P.Ositive and N.Egative projects. In general, add them only if it explicitly stated in the running notes.
 
+
 ### Lane yields
 
-| Platform | Type | Yield (Millions) |
-| :---: | :---: | :---: |
-| MiSeq | v2 | 10 |
-| MiSeq | v3 | 18 |
-| MiSeq | Nano v2 | 0.75 |
-| NextSeq 2000 | P1 | 100 |
-| NextSeq 2000 | P2 | 400 |
-| NextSeq 2000 | P3 | 1100 |
-| NovaSeq 6000 | SP | 325 |
-| NovaSeq 6000 | S1 | 650 |
-| NovaSeq 6000 | S2 | 1650 |
-| NovaSeq 6000 | S4 | 2000 |
-| NovaSeqXPlus | 1.5B | 750 |
-| NovaSeqXPlus | 10B | 1000 |
-| NovaSeqXPlus | 25B | 3000 |
+|   Platform   |            Type             | Yield (Millions) |
+|:------------:|:---------------------------:|:----------------:|
+|    MiSeq     |             v2              |        10        |
+|    MiSeq     |             v3              |        18        |
+|    MiSeq     |           Nano v2           |       0.75       |
+|    MiSeq     |   Micro (not accredited)    |        3         |
+| NextSeq 2000 |     P1 (not accredited)     |       100        |
+| NextSeq 2000 |     P2 (not accredited)     |       400        |
+| NextSeq 2000 | P3 2 x 300 (not accredited) |       300        |
+| NextSeq 2000 |     P2 (not accredited)     |     1100 \*      |
+| NovaSeqXPlus |            1.5B             |       750        |
+| NovaSeqXPlus |             10B             |       1200       |
+| NovaSeqXPlus |             25B             |       3000       |
 
-: The reads are distributed over two lanes that are not physically separated but listed as separate lanes in the output file structure. {#tbl-yields .striped .hover}
+: Lane yields for Illumina flowcells. {#tbl-illumina-yields .striped .hover}
+
+\* The reads are distributed over two lanes that are not physically separated but listed as separate lanes in the output file structure
+
+
+### Elements yields
+
+| Cycle Kit  | Output     | Cloudbreak Ultra Q Kits | Cloudbreak Freestyle (FS) Kits | **Cloudbreak Kits** |
+|:----------:|:----------:|:-----------------------:|:------------------------------:|:-------------------:|
+| 150        | Low        | -                    | 100                            | -                |
+| 150        | Medium     | -                    | 500                            | 500                 |
+| 150        | High       | -                    | 1000                           | 1000                |
+| 300        | -       | 800                     | -                           | -                |
+| 300        | Low        | -                    | 250                            | 250                 |
+| 300        | Medium     | -                    | 500                            | 500                 |
+| 300        | High       | -                    | 1000                           | 1000                |
+| 600        | Medium     | -                    | 100                            | 100                 |
+| 600        | High       | -                    | 300                            | 300                 |
+
+: Lane yields for AVITI flowcells. {#tbl-elements-yields .striped .hover}
+
+
+### Units yields
+
+| Library Type               | Universal Units                                                     | Specific Lanes                                                                                             |
+|:--------------------------:|:-------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------:|
+| **user supplied**          | **lane project yield** is 90% of the sum of the units for each lane | **Lane yield** reached the required levels                                                                 |
+|                            |                                                                     |                                                                                                            |
+| (passed reception control) |                                                                     |                                                                                                            |
+| **in-house**               | **lane project yield** is 90% of the sum of the units for each lane | [entire lanes:]{.underline} **Lane yield** reached the required levels                                     |
+|                            |                                                                     |                                                                                                            |
+|                            |                                                                     | [shared lanes:]{.underline} **lane project yield** is equal or higher as the fraction of the lane ordered. |
+
+: Overview of yield requirement for projects by lane. {#tbl-units-yields .striped .hover}
+
 
 ### Q30 thresholds
 
-| | MiSeq | NextSeq | NovaSeq |
-| :---: | :---: | :---: | :---: |
-| 2x50 bp (or below) | 80% | 80% | 85% |
-| 2x100 bp | 75% | 80% | 80% |
-| 2x150 bp | 70% | 75% | 75% |
-| 2x250 bp | 60% | 75% | 75% |
+|                    | MiSeq | NextSeq | NovaSeq |
+|:------------------:|:-----:|:-------:|:-------:|
+| 2x50 bp (or below) |  80%  |   80%   |   85%   |
+|      2x100 bp      |  75%  |   80%   |   80%   |
+|      2x150 bp      |  70%  |   75%   |   75%   |
+|      2x250 bp      |  60%  |   75%   |   75%   |
 
 : Base-calling accuracy based on the Q score (Phread quality score) of the reads. {#tbl-q30 .striped .hover}
 
+
 ### Undetermined reads thresholds
 
-| Platform | Setup | WARN threshold | FAIL threshold |
-| :---: | :---: | :---: | :---: |
-| MiSeq| Single index read | 10% | 20% |
-| MiSeq| Dual index read | 20% | 30% |
-| NextSeq| Any | 10% | 20% |
-| NovaSeq| Any | 10% | 20% |
+| Platform |       Setup       |    WARN threshold    |
+|:--------:|:-----------------:|:--------------------:|
+|  MiSeq   | Single index read |         10%          |
+|  MiSeq   |  Dual index read  |         20%          |
+| NextSeq  |        Any        |         10%          |
+| NovaSeq  |        Any        |         10%          |
+| AVITI 24 |        Any        | 10% (including PhiX) |
 
 : The thresholds are based on amount of PhiX added to the library (i.e. 1%); if more than 1% is added, the thresholds should be adjusted accordingly. {#tbl-undetermined .striped .hover}
+
 
 ---
