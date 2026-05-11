@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -21,19 +21,19 @@ repos:
         args: ['--pytest-test-first']
       - id: requirements-txt-fixer
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.2
     hooks:
       - id: codespell
         args: ['--skip', 'tests/*.py', '--skip', 'CHANGELOG.md']
         language: python
         types: [text]
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.5
+    rev: v1.5.6
     hooks:
       - id: remove-tabs
         exclude: 'Makefile*'
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.5
+    rev: v0.15.12
     hooks:
       # Run the linter.
       - id: ruff
@@ -53,5 +53,5 @@ repos:
         entry: python -m unittest discover
         language: python
         'types': [python]
-        additional_dependencies: []
+        additional_dependencies: [rich]
         pass_filenames: false
