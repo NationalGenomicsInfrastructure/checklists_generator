@@ -82,15 +82,15 @@ If a `config.json` file is present in the same directory as the script, it will 
 
 ```json
 {
-  "author": "John Doe",
-  "email": "john.doe@scilifelab.se",
-  "format": "markdown",
-  "output_path": "/path/to/output/directory",
-  "output_structure": "nested",
-  "quarto_path": "/usr/local/bin/quarto",
-  "ngi_path": "/path/to/NGI/folder",
-  "genstat_url": "https://genstat.example.com",
-  "charon_url": "https://charon.example.com",
-  "config_path": "/path/to/conf/TACA"
+    "author": "John Doe",
+    "email": "john.doe@scilifelab.se",
+    "format": "markdown",
+    "output_path": "/path/to/output/directory",
+    "output_structure": "nested",
+    "quarto_path": "/usr/local/bin/quarto",
+    "ngi_path": "/path/to/NGI/folder",
+    "genstat_url": "https://genstat.example.com",
+    "charon_url": "https://charon.example.com",
+    "config_path": "/path/to/conf/TACA"
 }
 ```
