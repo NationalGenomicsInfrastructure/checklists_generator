@@ -1,72 +1,3 @@
-<html>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script>
-    // Function to handle download
-    function downloadFunction() {
-        hideButtons();
-        const element = document.getElementById('body');
-        const formattedDate = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
-        const options = {
-            margin: 10,
-            filename: 'FileName_' + formattedDate + '.pdf',
-            image: { type: 'jpeg', quality: 1.0 },
-            html2canvas: { scale: 4 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        html2pdf(element, options);
-        showButtons();
-    }
-</script>
-
-<script>
-
-  function addAnswerWithButton(answerClass, buttonText, answerText) {
-
-    const divElement = document.querySelector(`.${answerClass}`);
-    const randomId = "answer-" + Math.floor(Math.random() * 1000000);
-
-    // Create the new button element
-    const buttonElement = document.createElement("button");
-    buttonElement.className = "show-answer";
-    buttonElement.textContent = buttonText;
-    buttonElement.onclick = function() {
-      showAnswer(randomId);
-    };
-
-    // Create the new answer element
-    const answerElement = document.createElement("p");
-    answerElement.id = randomId;
-    answerElement.style.display = "none";
-    answerElement.innerHTML = answerText;
-
-    // Replace the div element with the new button and answer elements
-    divElement.parentNode.replaceChild(buttonElement, divElement);
-    buttonElement.insertAdjacentElement("afterend", answerElement);
-  }
-
-  function showAnswer(answerId) {
-    var answer = document.getElementById(answerId);
-    if (answer.style.display === "none") {
-      answer.style.display = "block";
-    } else {
-      answer.style.display = "none";
-    }
-  }
-
-  function addAnswerButton() {
-    var answers = document.querySelectorAll(".answer")
-    answers.forEach(e => {
-      addAnswerWithButton("answer", " Show Answer", e.innerHTML);
-    });
-  }
-
-  window.document.addEventListener("DOMContentLoaded", function (event) {
-    addAnswerButton();
-  });
-</script>
-</html>
-
-
 ### Non-Accredited Bioinformatic Analysis: Visium Data Analysis
 
 This procedure assumes that the user has access to _Miarka_ and the _ngi-lab-ns_ storage, and that _Space Ranger_ and _Loupe Browser_ are installed and accessible.
@@ -221,7 +152,7 @@ fastqs,sample,library_type
 ```bash
 spaceranger count
     --id <project_id>_101 \
-    --transcriptome<transcriptome_path> \
+    --transcriptome <transcriptome_path> \
     --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv \
     --feature-ref <visium_base_path>/feature_refs/Visium_Human_Immune_Cell_Profiling_Panel_v1.0.csv \
     --libraries /path/to/<project_id>_101_library.csv \
@@ -242,7 +173,7 @@ If the automatic alignment of CytAssist image to the microscope image is poor (s
 ```bash
 spaceranger count
     --id <project_id>_101 \
-    --transcriptome<transcriptome_path> \
+    --transcriptome <transcriptome_path> \
     --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv \
     --feature-ref <visium_base_path>/feature_refs/Visium_Human_Immune_Cell_Profiling_Panel_v1.0.csv \
     --libraries /path/to/<project_id>_101_library.csv \
@@ -265,7 +196,7 @@ spaceranger count
 ```bash
 spaceranger count
     --id <project_id>_101 \
-    --transcriptome<transcriptome_path> \
+    --transcriptome <transcriptome_path> \
     --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv \
     --fastqs <ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id> \
     --sample <project_id>_101 \
@@ -290,7 +221,7 @@ Visium HD Manual Alignment tool requires [Loupe Browser v8.0 or later](https://w
 ```bash
 spaceranger count
     --id <project_id>_101 \
-    --transcriptome<transcriptome_path> \
+    --transcriptome <transcriptome_path> \
     --probe-set <visium_base_path>/probe_sets/Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv \
     --fastqs <ngi_path>/DATA/<project_id>/<project_id>_101/A/<flowcell_id> \
     --sample <project_id>_101 \

@@ -44,7 +44,7 @@ screen -S <user_signature>_<project_id>
 
 - [ ] Run TACA to start the soft-stage delivery:
 ```bash
-taca -c <config_path>/sthlm_taca_<instrument_config>_delivery.yml deliver --ignore-analysis-status --stage_only project <project_id>
+taca -c <config_path>/TACA/sthlm_taca_<instrument_config>_delivery.yml deliver --ignore-analysis-status --stage_only project <project_id>
 ```
 
 ::: {.callout-note}
@@ -62,7 +62,7 @@ The command prompt will ask for your username, password and second factor authen
 
 - [ ] Run the following command to start the delivery:
 ```bash
-taca -c <config_path>/sthlm_taca_<instrument_config>_delivery.yml deliver --cluster dds project <project_id>
+taca -c <config_path>/TACA/sthlm_taca_<instrument_config>_delivery.yml deliver --cluster dds project <project_id>
 ```
 
 - [ ] Write a running note that the delivery has been started
@@ -75,7 +75,7 @@ Started the delivery to DDS of project `DDS_project_id`. <author_signature>
 
 - [ ] Release the delivery to the user:
 ```bash
-taca -c <config_path>/sthlm_taca_<instrument_config>_delivery.yml deliver --cluster dds release-dds-project --dds_project <DDS_project_id> --no-dds-mail <project_id>
+taca -c <config_path>/TACA/sthlm_taca_<instrument_config>_delivery.yml deliver --cluster dds release-dds-project --dds_project <DDS_project_id> --no-dds-mail <project_id>
 ```
 
 - [ ] Close the `screen` session

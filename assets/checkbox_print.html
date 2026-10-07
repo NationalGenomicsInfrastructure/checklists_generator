@@ -1,0 +1,100 @@
+<style>
+  /*
+   * Print/PDF support for the task-list checkboxes.
+   *
+   * Browsers do not print the checked state of native <input
+   * type="checkbox"> elements, so when printing (or saving as PDF)
+   * each checkbox is replaced by a CSS-drawn box that shows a
+   * checkmark if the item was ticked. The ticked state is mirrored
+   * on the wrapping <label> as a `.checked` class by the script
+   * below, which survives printing because it lives in the DOM.
+   */
+  @media print {
+    .task-list input[type="checkbox"] {
+      display: none;
+    }
+    .task-list label::before {
+      content: "";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.05em;
+      height: 1.05em;
+      margin-right: 0.45em;
+      border: 1.5px solid currentColor;
+      border-radius: 3px;
+      box-sizing: border-box;
+      vertical-align: -0.2em;
+      flex: none;
+    }
+    .task-list label.checked::before {
+      content: "\2713";
+      font-size: 0.8em;
+      font-weight: 700;
+    }
+    #pdf-download-button {
+      display: none !important;
+    }
+  }
+  #pdf-download-button {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1090;
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #fff;
+    background-color: #2980b9;
+    border: none;
+    border-radius: 0.375rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+  }
+  #pdf-download-button:hover {
+    background-color: #2471a3;
+  }
+</style>
+<script>
+  (function () {
+    function syncLabel(label) {
+      var input = label.querySelector('input[type="checkbox"]');
+      if (input) {
+        label.classList.toggle("checked", input.checked);
+      }
+    }
+
+    function init() {
+      var labels = document.querySelectorAll("ul.task-list li > label");
+      for (var i = 0; i < labels.length; i++) {
+        syncLabel(labels[i]);
+      }
+      document.addEventListener("change", function (event) {
+        var target = event.target;
+        if (target && target.matches && target.matches('input[type="checkbox"]')) {
+          var label = target.closest("label");
+          if (label) {
+            syncLabel(label);
+          }
+        }
+      });
+      var button = document.createElement("button");
+      button.id = "pdf-download-button";
+      button.type = "button";
+      button.textContent = "Download PDF";
+      button.title =
+        "Print this checklist to a PDF file (choose 'Save as PDF' as the destination).";
+      button.addEventListener("click", function () {
+        window.print();
+      });
+      document.body.appendChild(button);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  })();
+</script>

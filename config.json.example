@@ -1,0 +1,14 @@
+{
+  "author": "Your Name",
+  "email": "your.name@scilifelab.se",
+  "format": "markdown",
+  "output_path": "/path/to/output/directory",
+  "output_structure": "nested",
+  "quarto_path": "/usr/local/bin/quarto",
+  "ngi_path": "/path/to/NGI/folder",
+  "incoming_path": "/path/to/incoming/folder",
+  "genstat_url": "https://genomics-status.example.com",
+  "charon_url": "https://charon.example.com",
+  "config_path": "/path/to/conf/TACA",
+  "log_level": "INFO"
+}

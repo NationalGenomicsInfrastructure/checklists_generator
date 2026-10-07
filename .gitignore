@@ -8,6 +8,8 @@
 **/20*,.qmd
 qmds/*
 **/*.html
+# ...but keep the asset files required by the templates
+!assets/*.html
 **/*_files
 
 # Local configuration file
@@ -15,3 +17,8 @@ config.json
 /.quarto/
 
 **/*.quarto_ipynb
+
+# Python caches
+__pycache__/
+**.pyc
+.ruff_cache/

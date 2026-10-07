@@ -1,5 +1,6 @@
-
 ## Monitoring / documenting the bioinformatic QC on Genomic Status
+
+> Note: The procedures in this document apply for data generated both by Illumina and Element sequencing machines at National Genomics Infrastructure (NGI) Stockholm, Science for Life Laboratory. Only the Illumina data flow is accredited.
 
 Open [GenStat deliveries](<genstat_url>/deliveries) and find the project you are interested in, and click on the project id to open the project status page.
 
@@ -8,15 +9,51 @@ If you provided the project id when generating this checklist, you can access it
 :::
 
 - [ ] Check the running notes for anything that needs to be taken into account during the QC
-- [ ] Check the number of lanes/units
- ordered and obtained
+- [ ] Check the number of lanes/units ordered and obtained
+
+## Close the _BCL conversion_ step on LIMS
+
+Open the LIMS *BCL conversion* page:
+
+- On GenStat, go to the *Samples* tab
+- Click on any of the samples in the *Sample* column (the first time to open the LIMS login page, and the second time to open the samples view)
+- Click on the *BCL conversion* button
+
+On the LIMS page:
+
+::: {.callout-important}
+Although possible, it is better to process one sample at the time
+:::
+
+- [ ] In the dropdown menu, change from *Container* to *Project*
+- [ ] Click on *add group* for the samples to process
+- [ ] Click on *Begin work* at the top right corner
+
+In the next section:
+
+- [ ] Update the Document version (current version is **5**)
+- [ ] Click on *BCL conversion and demultiplexing*
+
+Once the import is complete:
+
+- [ ] Update the *include reads* column
+    - [ ] From the dropdown menu, select *Include reads*
+    - [ ] From the second dropdown menu, select *Yes*
+    - [ ] Click on *Apply*
+- [ ] Double-check that the *Include reads* column is set to *Yes* for all samples
+- [ ] Click on *Next step* at the top right corner
+
+On the next page:
+
+- [ ] Select *Mark protocol as complete* in the dropdown menu
+- [ ] Click on *Finish step* at the top right corner
 
 ## Aggregate reads in the LIMS _Project summary_ page
 Open the LIMS _Project summary_ page:
 
-- On GenStat, go to the _Samples_ tab
-- Click on any of the samples in the _Sample_ column (the first time to open the LIMS login page, and the second time to open the samples view)
-- Click on the _Project Summary_ button
+- On GenStat, go to the *Samples* tab
+- Click on any of the samples in the *Sample* column (the first time to open the LIMS login page, and the second time to open the samples view)
+- Click on the *Project Summary* button
 
 On the LIMS page:
 
@@ -32,36 +69,83 @@ On the LIMS page:
 
 Positive and negative controls are valid for a calendar year, and can be found in their own P.Ositive and N.Egative projects. In general, add them only if it explicitly stated in the running notes.
 
+
 ### Lane yields
 
-| Platform | Type | Yield per lane (Millions) |
-| :---: | :---: | :---: |
-| MiSeq | v2 | 10 |
-| MiSeq | v3 | 18 |
-| MiSeq | Nano v2 | 0.75 |
-| NextSeq 2000 | P1 | 100 |
-| NextSeq 2000 | P2 | 400 |
-| NextSeq 2000 | P3 | 1100 |
-| NovaSeqXPlus | 1.5B | 750 |
-| NovaSeqXPlus | 10B | 1200 |
-| NovaSeqXPlus | 25B | 3000 |
-| NovaSeqXPlus | Universal | 600 |
+|   Platform   |            Type             | Yield (Millions) |
+|:------------:|:---------------------------:|:----------------:|
+|    MiSeq     |             v2              |        10        |
+|    MiSeq     |             v3              |        18        |
+|    MiSeq     |           Nano v2           |       0.75       |
+|    MiSeq     |   Micro (not accredited)    |        3         |
+| NextSeq 2000 |     P1 (not accredited)     |       100        |
+| NextSeq 2000 |     P2 (not accredited)     |       400        |
+| NextSeq 2000 | P3 2 x 300 (not accredited) |       300        |
+| NextSeq 2000 |     P2 (not accredited)     |     1100 \*      |
+| NovaSeqXPlus |            1.5B             |       750        |
+| NovaSeqXPlus |             10B             |       1200       |
+| NovaSeqXPlus |             25B             |       3000       |
+| NovaSeqXPlus |          Universal          |       600        |
 
-: Lane yields for different Illumina Flowcells, guaranteed by the supplier. Yields may be lower for pools or libraries that failed reception control. {#tbl-yields .striped .hover}
+: Lane yields for Illumina flowcells. {#tbl-illumina-yields .striped .hover}
 
-::: {.callout-note}
-For NextSeq 2000 P3: The reads are distributed over two lanes that are not physically separated but listed as separate lanes in the output file structure.
-:::
+\* The reads are distributed over two lanes that are not physically separated but listed as separate lanes in the output file structure
+
+
+### Elements yields
+
+| Cycle Kit  | Output     | Cloudbreak Ultra Q Kits | Cloudbreak Freestyle (FS) Kits | **Cloudbreak Kits** |
+|:----------:|:----------:|:-----------------------:|:------------------------------:|:-------------------:|
+| 150        | Low        | -                    | 100                            | -                |
+| 150        | Medium     | -                    | 500                            | 500                 |
+| 150        | High       | -                    | 1000                           | 1000                |
+| 300        | -       | 800                     | -                           | -                |
+| 300        | Low        | -                    | 250                            | 250                 |
+| 300        | Medium     | -                    | 500                            | 500                 |
+| 300        | High       | -                    | 1000                           | 1000                |
+| 600        | Medium     | -                    | 100                            | 100                 |
+| 600        | High       | -                    | 300                            | 300                 |
+
+: Lane yields for AVITI flowcells. {#tbl-elements-yields .striped .hover}
+
+
+### Units yields
+
+| Library Type               | Universal Units                                                     | Specific Lanes                                                                                             |
+|:--------------------------:|:-------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------:|
+| **user supplied**          | **lane project yield** is 90% of the sum of the units for each lane | **Lane yield** reached the required levels                                                                 |
+|                            |                                                                     |                                                                                                            |
+| (passed reception control) |                                                                     |                                                                                                            |
+| **in-house**               | **lane project yield** is 90% of the sum of the units for each lane | [entire lanes:]{.underline} **Lane yield** reached the required levels                                     |
+|                            |                                                                     |                                                                                                            |
+|                            |                                                                     | [shared lanes:]{.underline} **lane project yield** is equal or higher as the fraction of the lane ordered. |
+
+: Overview of yield requirement for projects by lane. {#tbl-units-yields .striped .hover}
+
 
 ### Q30 thresholds
 
-| | MiSeq | NextSeq | NovaSeq |
-| :---: | :---: | :---: | :---: |
-| 2x50 bp (or below) | 80% | 80% | 85% |
-| 2x100 bp | 75% | 80% | 80% |
-| 2x150 bp | 70% | 75% | 75% |
-| 2x250 bp | 60% | 75% | 75% |
+|                    | MiSeq | NextSeq | NovaSeq |
+|:------------------:|:-----:|:-------:|:-------:|
+| 2x50 bp (or below) |  80%  |   80%   |   85%   |
+|      2x100 bp      |  75%  |   80%   |   80%   |
+|      2x150 bp      |  70%  |   75%   |   75%   |
+|      2x250 bp      |  60%  |   75%   |   75%   |
 
 : Amount of reads that need to reach a Q score (Phread quality score) of 30 or higher. The %Q30 score may be lower for pools or libraries that failed reception control. {#tbl-q30 .striped .hover}
+
+
+### Undetermined reads thresholds
+
+| Platform |       Setup       |    WARN threshold    |
+|:--------:|:-----------------:|:--------------------:|
+|  MiSeq   | Single index read |         10%          |
+|  MiSeq   |  Dual index read  |         20%          |
+| NextSeq  |        Any        |         10%          |
+| NovaSeq  |        Any        |         10%          |
+| AVITI 24 |        Any        | 10% (including PhiX) |
+
+: The thresholds are based on amount of PhiX added to the library (i.e. 1%); if more than 1% is added, the thresholds should be adjusted accordingly. {#tbl-undetermined .striped .hover}
+
 
 ---

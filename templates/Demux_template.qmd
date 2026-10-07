@@ -1,0 +1,59 @@
+## Data Preprocessing, Demultiplexing and Sequencing Run QC
+
+## Setting values of QC boxes
+
+Click on the [bioinfo tab](<genstat_url>/bioinfo/<project_id>) and the [flowcell page](<genstat_url>/flowcells/<flowcell_id>)
+
+On the [flowcell page](<genstat_url>/flowcells/<flowcell_id>), check the following, and update the [bioinfo tab](<genstat_url>/bioinfo/<project_id>) checklist accordingly:
+
+- [ ] Total clusters and clusters per lane (see @tbl-illumina-yields, @tbl-elements-yields and @tbl-units-yields)
+- [ ] PhiX error rate -> It should be below 2% (unless more than 1% PhiX was added; for Element runs and Illumina runs, the PhiX sequencing error rate for read 1 and read 2 can be found in the sequencing step in LIMS)
+- [ ] Q30 (see @tbl-q30)
+- [ ] Undetermined reads
+    - [ ] Total number is below threshold (see @tbl-undetermined)
+    - [ ] The majority belong to the same index (e.g. PhiX)
+- [ ] The fraction number of any unexpected indexes and if they are similar to any index in the project
+
+> For non-accredited methods, the method specific check boxes shall be set to N/A.
+>
+> The undetermined reads checkbox needs to be set to **FAIL** only if the data cannot be delivered to the user, for example due to a contamination leading to high undetermined reads.
+>
+> In cases where data is going to be processed with unresolved unexpected indexes, set the "unexpected indexes" check box to WARN for all projects in that lane
+>
+> We currently do not guarantee a specific yield for Element runs towards the user and commonly see yields as low as 50% of these specifications. Nevertheless, the sequencing operator needs to be notified of lanes with low yields.
+>
+> For Element runs, no limit for % Q30 has yet been set.
+
+::: {.callout-tip title="Universal units yield cal"}
+For projects setup with universal units, the lane project yield should reach at least 90% of the unit size. For example if the project was sequenced aiming for 1 unit, it should reach at least 600M * 0.9 = 540 M reads. For project setup with specific flowcell type, the lane project yield should reach the full amount of the allocated yield. For example, if a project was set up for 1/2 lane of a NovaSeqXPlus 25B flowcell, the project should reach 3000 M / 2 = 1500 M reads.
+
+In some cases the user requests (or the library prep demands) an increased addition of PhiX control library. In these cases, the minimum required lane project yield decreases by the corresponding fraction of ordered reads of the additional PhiX.
+
+For example if a project is set up with 2 universal units and a target of 25% PhiX, the required project yield changes to:
+
+`(required project yield) - (unit size) * (PhiX target fraction - standard PhiX target fraction) =>`
+`(2 * 540 M) - (2 * 600 M) * (0.25 - 0.01) = 1080M - 288M = 792M`
+
+The guaranteed sample yield can be calculated as follows:
+
+`([required lane (project) yield] / [sample number]) * 0.75`
+:::
+
+::: {.callout-important}
+For the following project setups and library preparation methods, the sample QC does not influence the delivery decision of the project and can hence be skipped:
+
+- user supplied libraries
+- all in-house short reads amplicon methods (16S / 18S / indexing)
+- RADseq libraries
+- projects with user QC
+- projects with only one sample
+- in-house single cell libraries (required sample yields will be set and checked by the single cell team at a later stage)
+
+The check boxes will still need to be filled in for lane (project) yield results.
+:::
+
+- [ ] Save the recorded changes on the [bioinfo tab](<genstat_url>/bioinfo/<project_id>)
+
+On the project page:
+
+- [ ] Check the number of lanes ordered and obtained

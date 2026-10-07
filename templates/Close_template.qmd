@@ -3,7 +3,7 @@
 
 ### Final checks on Genomic Status before closing
 
-On [GenStat](https://genomics-status.scilifelab.se/project/<project_id>), go to the _Links_ tab:
+On [GenStat](<genstat_url>/project/<project_id>), go to the _Links_ tab:
 
  - [ ] Check that the _Project Folder_ link is working
 
@@ -30,7 +30,7 @@ On LIMS, click on the magnifying glass icon, select _Project_ from the dropdown 
 
 ### Final step on Google Drive
 
-On [GenStat](https://genomics-status.scilifelab.se/project/<project_id>), go to the _Links_ tab, and open the _Project Folder_ link.
+On [GenStat](<genstat_url>/project/<project_id>), go to the _Links_ tab, and open the _Project Folder_ link.
 
 - [ ] Go to *_Quality Assurance system* > Projects > Ongoing projects > `<project_name>`
 - [ ] Move the project folder to the folder *_Can be Archived*
