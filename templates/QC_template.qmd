@@ -96,17 +96,17 @@ Positive and negative controls are valid for a calendar year, and can be found i
 
 | Cycle Kit  | Output     | Cloudbreak Ultra Q Kits | Cloudbreak Freestyle (FS) Kits | **Cloudbreak Kits** |
 |:----------:|:----------:|:-----------------------:|:------------------------------:|:-------------------:|
-| 150        | Low        | -                    | 100                            | -                |
-| 150        | Medium     | -                    | 500                            | 500                 |
-| 150        | High       | -                    | 1000                           | 1000                |
-| 300        | -       | 800                     | -                           | -                |
-| 300        | Low        | -                    | 250                            | 250                 |
-| 300        | Medium     | -                    | 500                            | 500                 |
-| 300        | High       | -                    | 1000                           | 1000                |
-| 600        | Medium     | -                    | 100                            | 100                 |
-| 600        | High       | -                    | 300                            | 300                 |
+| 2x75        | Low        | -                    | 75                            | -                |
+| 2x75        | Medium     | -                    | 375                            | 375                 |
+| 2x75        | High       | -                    | 750                           | 750                |
+| 2x150        | -       | 800                     | -                           | -                |
+| 2x150        | Low        | -                    | 187.5                            | 187.5                 |
+| 2x150        | Medium     | -                    | 375                            | 375                 |
+| 2x150        | High       | -                    | 750                           | 750                |
+| 2x300        | Medium     | -                    | 100                            | 100                 |
+| 2x300        | High       | -                    | 300                            | 300                 |
 
-: Lane yields for AVITI flowcells. {#tbl-elements-yields .striped .hover}
+: **Lane yields** for AVITI flowcells. {#tbl-elements-yields .striped .hover}
 
 
 ### Units yields
