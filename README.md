@@ -4,9 +4,9 @@ Python script to dynamically generate the bioinfo production checklists for QC, 
 
 The templates are based on the following internal documents and versions:
 
-- Bioinfo QC: _1617:**6**_
-- Delivery: _1286:**23**_
-- Close: _1262:**18**_
+- Bioinfo QC: _1617:**7**_
+- Delivery: _1286:**24**_
+- Close: _1262:**19**_
 
 ## Requirements
 
@@ -80,48 +80,14 @@ The test suite uses Python's built-in `unittest` framework and requires no addit
 Run all tests from the repository root:
 
 ```bash
-python -m unittest tests -v
+python -m unittest test_generate_checklists -v
 ```
 
 Run a single test class:
 
 ```bash
-python -m unittest tests.TestValidateTemplates -v
+python -m unittest test_generate_checklists.TestValidateTemplates -v
 ```
-
-Run a single test method:
-
-```bash
-python -m unittest tests.TestParseMarkdownTemplates.test_runfolder_qc_partial_injected -v
-```
-
-A passing run looks like this:
-
-```
-test_runfolder_delivery_template_used (tests.TestParseMarkdownTemplates) ... ok
-test_runfolder_path_not_substituted_when_absent (tests.TestParseMarkdownTemplates) ... ok
-test_runfolder_path_substituted (tests.TestParseMarkdownTemplates) ... ok
-test_runfolder_qc_partial_injected (tests.TestParseMarkdownTemplates) ... ok
-test_standard_delivery_template_used (tests.TestParseMarkdownTemplates) ... ok
-test_standard_qc_partial_injected (tests.TestParseMarkdownTemplates) ... ok
-test_exceptions (tests.TestValidateFlowcellId) ... ok
-test_happy_path (tests.TestValidateFlowcellId) ... ok
-test_exceptions (tests.TestValidateProjectId) ... ok
-test_happy_path (tests.TestValidateProjectId) ... ok
-test_missing_delivery_template_exits (tests.TestValidateTemplates) ... ok
-test_missing_qc_partial_exits (tests.TestValidateTemplates) ... ok
-test_missing_templates_dir_exits (tests.TestValidateTemplates) ... ok
-test_runfolder_passes (tests.TestValidateTemplates) ... ok
-test_standard_passes (tests.TestValidateTemplates) ... ok
-
-Ran 15 tests in 0.026s
-
-OK
-```
-
-The `ERROR` log lines printed by the `test_missing_*` tests are expected — they are the error messages logged by the script before `exit(1)` is called, which is the behaviour being verified.
-
-Note: the tests do not require Quarto to be installed as they only exercise template parsing and validation, not the final HTML/markdown rendering step.
 
 ## Options
 
