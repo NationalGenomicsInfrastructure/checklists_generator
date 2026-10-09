@@ -4,9 +4,9 @@ Python script to dynamically generate the bioinfo production checklists for QC, 
 
 The templates are based on the following internal documents and versions:
 
-- Bioinfo QC: _1617:**6**_
-- Delivery: _1286:**23**_
-- Close: _1262:**18**_
+- Bioinfo QC: _1617:**7**_
+- Delivery: _1286:**24**_
+- Close: _1262:**19**_
 
 ## Requirements
 
@@ -24,6 +24,41 @@ python generate_checklists.py --output-path . --format html
 
 This will generate three checklists (i.e. QC, Delivery and Close) in HTML format in the current directory. It will also generate the corresponding `.qmd` files with the same base name, and place them in the `qmds` folder. A `.qmd` file is a Quarto document that can be edited and rendered to generate a new HTML file with the updated checklist.
 
+A more complete example for a standard delivery:
+
+```bash
+python generate_checklists.py --output-path . --format html \
+  --project P1234 --flowcell 240101_A01234_0001_ABCDEFGHIJ-ACBSH \
+  --author "John Doe" --signature jdoe --email john.doe@scilifelab.se \
+  --timestamp --output-structure nested
+```
+
+To generate checklists for an Illumina runfolder delivery, pass `--delivery-type runfolder`:
+
+```bash
+python generate_checklists.py --output-path . --format html --delivery-type runfolder \
+  --project P1234 --flowcell 240101_A01234_0001_ABCDEFGHIJ-ACBSH \
+  --runfolder-path /path/to/ngi_data/runfolder
+```
+
+For an AVITI instrument, pass `--instrument aviti` (this switches the TACA config from `fastq` to `elements`):
+
+```bash
+python generate_checklists.py --output-path . --format html --instrument aviti \
+  --project P1234 --flowcell 20240101_BC12345_001_ABCDEFG123-ABC12 \
+  --author "John Doe" --signature jdoe --email john.doe@scilifelab.se \
+  --timestamp --output-structure nested
+```
+
+For a Visium project, pass `--best-practice visium` to generate a fourth checklist for the spatial analysis steps:
+
+```bash
+python generate_checklists.py --output-path . --format html --best-practice visium \
+  --project P1234 --flowcell 240101_A01234_0001_ABCDEFGHIJ-ACBSH --slide V12A34-567 \
+  --visium-base-path /path/to/visium/base --transcriptome-path /path/to/transcriptome \
+  --author "John Doe" --signature jdoe --email john.doe@scilifelab.se \
+  --timestamp --output-structure nested
+```
 To save an HTML checklist as a PDF while preserving the ticked checkboxes, open the HTML file in a web browser, tick the completed checklist items, and click the "Download PDF" button in the bottom-right corner (or use the browser's print dialog, e.g. `Ctrl+P` / `Cmd+P`), then choose "Save as PDF" as the destination.
 
 To re-generate any of the checklists after having modified its `.qmd` file, run the following command:
@@ -38,10 +73,26 @@ Instead, if you want to generate the checklists in markdown format, run:
 quarto render qmds/<qmd_file> --to markdown --embed-resources --standalone
 ```
 
+## Testing
+
+The test suite uses Python's built-in `unittest` framework and requires no additional test dependencies beyond `rich` (already needed to run the script itself).
+
+Run all tests from the repository root:
+
+```bash
+python -m unittest test_generate_checklists -v
+```
+
+Run a single test class:
+
+```bash
+python -m unittest test_generate_checklists.TestValidateTemplates -v
+```
+
 ## Options
 
 - `--help`: Show the help message and exit.
-- `--templates-path`: The path to the template files. The default is `templates`. The script will look for three files in this directory: `QC_template.qmd`, `Delivery_template.qmd`, and `Close_template.qmd`. These files are used to generate the QC checklist, delivery checklist, and close checklist, respectively.
+- `--templates-path`: The path to the template files. The default is `templates`. The script expects `QC_template.qmd`, `Close_template.qmd`, and a delivery template named after the delivery type (`Delivery_standard_template.qmd` or `Delivery_runfolder_template.qmd`). The QC template uses a partial from `templates/partials/qc_<delivery-type>.qmd` to inject the type-specific QC steps.
 - `--format`: The output format for the checklist: `markdown` or `html`. This is required, either via this option or the `format` key in the configuration file.
 - `--name`: The project name (format: `<username>_<year>_<index>`). If not provided, the script will leave a generic placeholder (`<project_name>`) in the output file.
 - `--project`: The project ID for which the QC checklist will be generated. If not provided, the script will leave a generic placeholder (`<project_id>`) in the output file.
@@ -52,6 +103,8 @@ quarto render qmds/<qmd_file> --to markdown --embed-resources --standalone
 - `--author`: The full name of the author. If not provided, the script will not include the author in the output file.
 - `--signature`: The author signature (initials) used in the running notes. If not provided, the signature placeholders are removed from the output file.
 - `--email`: The email address of the author. If not provided, the script will not include the email in the output file.
+- `--delivery-type`: The delivery type, which determines which QC and delivery checklist content is generated. The default is `standard`. Use `runfolder` to generate checklists for Illumina runfolder deliveries, where the raw runfolder is transferred to Miarka and delivered without bcl conversion or demultiplexing.
+- `--runfolder-path`: The path to the runfolder on the ngi_data server. Used together with `--delivery-type runfolder` to pre-fill the `<runfolder_path>` placeholder in the TACA transfer command. If not provided, the placeholder is left in the output file.
 - `--instrument`: The instrument type: `illumina` (default) or `aviti`.
 - `--best-practice`: Set to `visium` to also generate the Visium data analysis checklist.
 - `--ngi-path`: The path to the NGI folder on Miarka. This is used to generate the path to the project folders. If not provided, the script will leave a generic placeholder (`<ngi_path>`) in the output file.
@@ -73,6 +126,8 @@ quarto render qmds/<qmd_file> --to markdown --embed-resources --standalone
 
 If a `config.json` file is present in the same directory as the script, it will be used to set the default values for all or some of the options. The configuration file should be in JSON format and can include the following keys:
 
+- `delivery_type [string]`
+- `runfolder_path [string]`
 - `templates_path [string]`
 - `format [string]`
 - `project [string]`

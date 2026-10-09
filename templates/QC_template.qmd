@@ -60,104 +60,7 @@ On the LIMS page:
 - [ ] Click on _Reads Aggregation | Run_
 
 
-### Check Yield and quality QC
-
-For samples, check the following:
-
-- [ ] Total reads (based on number of samples and total number of reads ordered)
-- [ ] Q30 (see @tbl-q30)
-- [ ] If yield and quality has been reached enter the sequencing date in _All samples sequenced_
-- [ ] Put your signature in the _Signature All samples sequenced_
-- [ ] Check other fields for correctness
-- [ ] Click on _Reads Aggregation | Run_
-
-In the table at the bottom of the page, the *QC* column refers to whether the sample has to be delivered or not.
-
-- [ ] Set the value of the _QC_ column accordingly (i.e. whether the sample has to be delivered or not)
-- [ ] Set the value of the _Set App QC_ column to _N/A_ (unless they are RNA-seq samples)
-- [ ] Click on _Record Changes | Run_
-
-
-### Data organisation on the UPPMAX cluster
-
-- [ ] Log into Miarka
-
-::: {.callout-tip title="Activate the production environment [OPTIONAL]"}
-`source <config_path>/sourceme_sthlm.sh && source activate NGI`
-:::
-
-- [ ] Start the data organisation by running the following command:
-
-```bash
-cd <incoming_path>/<instrument_path>
-
-ngi_pipeline_start.py organize flowcell <flowcell_id> -p <project_id>
-```
-
-::: {.callout-tip}
-The `project_id` and `flowcell_id` can be found either in the GenStat running notes or at the top of the bioinfo tab
-:::
-
-Once the data organisation is complete:
-
-- [ ] Check on [Charon](<charon_url>/project/<project_id>) that the *Status* column changed from *FRESH* to *STALE*
-
-### Basic QC reports and contamination screen
-
-On Miarka:
-
-- [ ] Submit the QC jobs as follows:
-
-```bash
-ngi_pipeline_start.py qc project <ngi_path>/DATA/<project_id>
-```
-
-- [ ] Write a running note saying that the fastqc and fastq_screen jobs have been started
-
-```text
-Data organized and QC started for <project_id> samples on <flowcell_id>. <author_signature>
-```
-
-- [ ] Sign the note and add the required tags
-
-You can check that the jobs have been submitted or are running by using the following command:
-
-```bash
-jobinfo | grep <project_id>
-```
-
-### Contamination screen / MultiQC report generation
-
-Once the jobs are finished (i.e. the `jobinfo` command does not return any entry):
-
-- [ ] Move to the project directory and submit the multiqc job:
-
-```bash
-cd <ngi_path>/ANALYSIS/<project_id> && multiqc qc_ngi
-```
-
-In the command line output:
-
-- [ ] Check that the total number of reports matches the number of samples (it should be twice the number of samples)
-
-- [ ] If opened, refresh the GenStat page, so that the MultiQC report will be listed in the *Reports* tab
-
-Open the MultiQC report and check the following:
-
-  - [ ] The FastQ Screen results match the expectations, based on the information about the samples
-  - [ ] The duplication levels are within acceptable limits
-  - [ ] Mean Quality Scores are in the green zone
-  - [ ] The "Per Base N Content" does not exceed 10% in any given cycle or 5% in more than 10% of the cycles
-
-Open the [bioinfo tab](<genstat_url>/bioinfo/<project_id>):
-
-- [ ] Fill all the fastq_screen field according to the results of the MultiQC report
-
-::: {.callout-tip title="Write a running note [OPTIONAL]"}
-- [ ] Write a running note if there are things to bring up from the report: `MultiQC report has been generated for <project_id>. <author_signature>`
-- [ ] Sign the note and add the required tags
-:::
-
+<qc_type_section>
 ---
 
 ## Appendix
@@ -193,17 +96,17 @@ Positive and negative controls are valid for a calendar year, and can be found i
 
 | Cycle Kit  | Output     | Cloudbreak Ultra Q Kits | Cloudbreak Freestyle (FS) Kits | **Cloudbreak Kits** |
 |:----------:|:----------:|:-----------------------:|:------------------------------:|:-------------------:|
-| 150        | Low        | -                    | 100                            | -                |
-| 150        | Medium     | -                    | 500                            | 500                 |
-| 150        | High       | -                    | 1000                           | 1000                |
-| 300        | -       | 800                     | -                           | -                |
-| 300        | Low        | -                    | 250                            | 250                 |
-| 300        | Medium     | -                    | 500                            | 500                 |
-| 300        | High       | -                    | 1000                           | 1000                |
-| 600        | Medium     | -                    | 100                            | 100                 |
-| 600        | High       | -                    | 300                            | 300                 |
+| 2x75        | Low        | -                    | 75                            | -                |
+| 2x75        | Medium     | -                    | 375                            | 375                 |
+| 2x75        | High       | -                    | 750                           | 750                |
+| 2x150        | -       | 800                     | -                           | -                |
+| 2x150        | Low        | -                    | 187.5                            | 187.5                 |
+| 2x150        | Medium     | -                    | 375                            | 375                 |
+| 2x150        | High       | -                    | 750                           | 750                |
+| 2x300        | Medium     | -                    | 100                            | 100                 |
+| 2x300        | High       | -                    | 300                            | 300                 |
 
-: Lane yields for AVITI flowcells. {#tbl-elements-yields .striped .hover}
+: **Lane yields** for AVITI flowcells. {#tbl-elements-yields .striped .hover}
 
 
 ### Units yields
@@ -229,7 +132,7 @@ Positive and negative controls are valid for a calendar year, and can be found i
 |      2x150 bp      |  70%  |   75%   |   75%   |
 |      2x250 bp      |  60%  |   75%   |   75%   |
 
-: Base-calling accuracy based on the Q score (Phread quality score) of the reads. {#tbl-q30 .striped .hover}
+: Amount of reads that need to reach a Q score (Phread quality score) of 30 or higher. The %Q30 score may be lower for pools or libraries that failed reception control. {#tbl-q30 .striped .hover}
 
 
 ### Undetermined reads thresholds

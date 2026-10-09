@@ -12,12 +12,6 @@ import yaml
 from datetime import datetime
 from rich.logging import RichHandler
 
-# Template labels and their corresponding filenames (label: template_file)
-REQUIRED_TEMPLATES = [
-    {"label": "QC", "file": "QC_template.qmd"},
-    {"label": "Delivery", "file": "Delivery_template.qmd"},
-    {"label": "Close", "file": "Close_template.qmd"},
-]
 
 # Asset injected into the HTML output so that ticked checkboxes are
 # preserved when the page is printed or saved as a PDF
@@ -111,6 +105,19 @@ def create_parser():
         help="Instrument type.",
         default="illumina",
         choices=["illumina", "aviti"],
+    )
+    parser.add_argument(
+        "--delivery-type",
+        type=str,
+        help="Delivery type for the checklist.",
+        default=None,
+        choices=["standard", "runfolder"],
+    )
+    parser.add_argument(
+        "--runfolder-path",
+        type=pathlib.Path,
+        help="Path to the runfolder on the ngi_data server (used with --delivery-type runfolder).",
+        default=None,
     )
     parser.add_argument(
         "--best-practice",
@@ -329,6 +336,10 @@ def set_run_parameters(args):
         if not config["output_path"].is_dir():
             config["output_path"].mkdir(parents=True, exist_ok=True)
 
+    # Set default for delivery_type
+    if not config.get("delivery_type"):
+        config["delivery_type"] = "standard"
+
     return config
 
 
@@ -378,6 +389,18 @@ TEMPLATE_HEADER_MAP = {
 }
 
 
+# generate template labels and their corresponding filenames (label: template_file)
+def get_required_templates(delivery_type: str) -> list[dict]:
+    return [
+        {"label": "QC", "file": "QC_template.qmd"},
+        {
+            "label": f"Delivery_{delivery_type}",
+            "file": f"Delivery_{delivery_type}_template.qmd",
+        },
+        {"label": "Close", "file": "Close_template.qmd"},
+    ]
+
+
 def validate_quarto_path(quarto_path):
     """Validate the Quarto path."""
     if quarto_path is not None:
@@ -411,14 +434,20 @@ def validate_quarto_path(quarto_path):
     return quarto_path, quarto_version
 
 
-def validate_templates(template_path: pathlib.Path, extra_templates: list = None):
+def validate_templates(
+    template_path: pathlib.Path,
+    extra_templates: list = None,
+    delivery_type: str = "standard",
+):
     """Validate the template path."""
     if extra_templates is None:
         extra_templates = []
     if not template_path.is_dir():
         logging.error("The specified template path does not exist.")
         sys.exit(1)
-    required_templates = [t["file"] for t in REQUIRED_TEMPLATES] + extra_templates
+    required_templates = [
+        t["file"] for t in get_required_templates(config["delivery_type"])
+    ] + extra_templates
     missing_templates = [
         template
         for template in required_templates
@@ -428,7 +457,11 @@ def validate_templates(template_path: pathlib.Path, extra_templates: list = None
         logging.error(
             f"The following required templates are missing: {', '.join(missing_templates)}"
         )
-        sys.exit(1)
+        exit(1)
+    partial_path = template_path / "partials" / f"qc_{delivery_type}.qmd"
+    if not partial_path.is_file():
+        logging.error(f"Required QC partial template not found: {partial_path}")
+        exit(1)
 
 
 def prepare_markdown_header(config: dict, template: str):
@@ -437,7 +470,7 @@ def prepare_markdown_header(config: dict, template: str):
     if template == "qc":
         title = "QC and Delivery"
         subtitle = "Bioinformatic Sample QC and Preparation for Data Delivery"
-    elif template == "delivery":
+    elif re.match("delivery.*", template):
         title = "Delivery"
         subtitle = "Bioinformatic Sample Delivery"
     elif template == "close":
@@ -599,24 +632,35 @@ def parse_markdown_templates(config: dict) -> dict:
         )
         return line
 
-    def write_template(label: str):
+    def write_template(label: str, template_name: str = None):
         """Write the template content to the output file."""
         outname = (
             f"{config['basename']}_{label}.qmd"
             if config["basename"] != ""
             else f"{label}.qmd"
         )
+        template_file_name = f"{template_name or label}_template.qmd"
         with open(outname, "w") as output_file:
             output_file.write(header)
             # Write the template content
             with open(
-                config["templates_path"].joinpath(f"{label}_template.qmd"), "r"
+                config["templates_path"].joinpath(template_file_name), "r"
             ) as template_file:
                 for line in template_file:
-                    output_file.write(parse_line(config, line))
+                    if line.strip() == "<qc_type_section>":
+                        partial_path = (
+                            config["templates_path"]
+                            / "partials"
+                            / f"qc_{config['delivery_type']}.qmd"
+                        )
+                        with open(partial_path, "r") as partial_file:
+                            for partial_line in partial_file:
+                                output_file.write(parse_line(config, partial_line))
+                    else:
+                        output_file.write(parse_line(config, line))
 
     results_dict = {}
-    for tmpl in REQUIRED_TEMPLATES:
+    for tmpl in get_required_templates(config["delivery_type"]):
         label = tmpl["label"]
         outname = (
             f"{config['basename']}_{label}.qmd"
@@ -755,7 +799,9 @@ if __name__ == "__main__":
     extra_templates = (
         ["Visium_template.qmd"] if config["best_practice"] == "visium" else []
     )
-    validate_templates(config["templates_path"], extra_templates)
+    validate_templates(
+        config["templates_path"], extra_templates, config["delivery_type"]
+    )
 
     # Create the output directory if it doesn't exist
     config["output_path"].mkdir(parents=True, exist_ok=True)
